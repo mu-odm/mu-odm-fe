@@ -1,21 +1,31 @@
 "use client";
 
 import Card from "@/components/card";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { fetchUserByEmail, useUserStore } from "@/stores/userStore";
 import { loginUser, registerUser, useAuthStore } from "@/stores/authStore";
+import { useRouter } from 'next/navigation';
+
 
 export default function Home() {
+  const router = useRouter();
   const user = useUserStore((state) => state.user);
   const token = useAuthStore((state) => state.token);
 
+  
+  
+
+  const goToProductPage = () => {
+      router.push('/product_view');
+  };
+
   const registerHandler = async () => {
     await registerUser({
-        email: "xxxx@gmail.com",
-        username: "pun",
-        password: "Pu@13@ljljuuun",
-    })
-  }
+      email: "xxxx@gmail.com",
+      username: "pun",
+      password: "Pu@13@ljljuuun",
+    });
+  };
 
   const loginHandler = async () => {
     await loginUser({
@@ -28,7 +38,7 @@ export default function Home() {
   const logoutHandler = () => {
     useAuthStore.getState().clearToken();
     window.location.reload();
-  }
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -39,7 +49,7 @@ export default function Home() {
           console.error("Error fetching user:", error);
         }
       }
-    }
+    };
     fetchUser();
   }, [token]);
 
@@ -48,8 +58,9 @@ export default function Home() {
       <div>hello world</div>
       <button onClick={registerHandler} className="btn">Register</button>
       <button onClick={loginHandler} className="btn">Login</button>
-      <button onClick={logoutHandler} className="btn bg-red-600" >Logout</button>
-      <Card></Card>
+      <button onClick={logoutHandler} className="btn bg-red-600">Logout</button>
+      <button onClick={goToProductPage} className="btn">Go to Product Page</button>
+      <Card />
       <div>
         <h3>
           {user ? (
@@ -66,3 +77,4 @@ export default function Home() {
     </main>
   );
 }
+
