@@ -1,5 +1,4 @@
 "use client";
-import { useRouter } from 'next/navigation';
 
 type CardProps = {
   title: string;
@@ -7,19 +6,11 @@ type CardProps = {
   imageUrl: string;
   warehouse: string;
   amount: number;
-  slug: string;
 };
 
-export default function Card({ title, description, imageUrl, warehouse, amount, slug }: CardProps) {
-  const router = useRouter();
-
-  const handleClick = () => {
-    router.push(`/product_view/${slug}`);
-  };
-
+export default function Card({ title, description, imageUrl, warehouse, amount }: CardProps) {
   return (
     <div 
-      onClick={handleClick}
       className="flex flex-col-1 h-44 w-auto rounded overflow-hidden shadow-lg bg-red-600 cursor-pointer hover:shadow-xl transition-shadow duration-300"
     >
       <img className="w-44 h-44 object-fit" src={imageUrl} alt={title} />
@@ -32,5 +23,3 @@ export default function Card({ title, description, imageUrl, warehouse, amount, 
     </div>
   );
 }
-
-  
