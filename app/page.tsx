@@ -1,5 +1,7 @@
 "use client";
 
+import Image from 'next/image'
+
 import Card from "@/components/card";
 import { useEffect } from "react";
 import { fetchUserByEmail, useUserStore } from "@/stores/userStore";
@@ -62,6 +64,9 @@ export default function Home() {
             "Loading..."
           )}
         </h3>
+      </div>
+      <div>
+        <Image src={''} alt={''} />
       </div>
     </main>
   );
