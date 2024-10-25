@@ -101,10 +101,8 @@ export default function Home() {
 
   return (
     <div className="flex-1 bg-white">
-      <Header title="Product Views" button1Text="Profile" button2Text="Settings" />
       <div className="p-8">
         <div className="flex">
-          <Sidebar />
           <div className="h-96 grid grid-cols-4 gap-x-4 gap-y-1 px-20 text-black">
             {products.map((product: Product, index: number) => (  // Explicitly define the type for product
               <div key={index} onClick={() => handleCardClick(product)} style={{ cursor: 'pointer' }}>

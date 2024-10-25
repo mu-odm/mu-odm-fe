@@ -1,32 +1,41 @@
 "use client";
 
+import { useAuthStore } from '@/stores/authStore';
 import { useRouter } from 'next/navigation';
 
-export default function Sidebar() {
+interface Route {
+    name: string;
+    route: string;
+}
 
-  const router = useRouter();
+interface SidebarProps {
+    route_list?: Route[];  // `route_list` is optional
+}
 
-  const goToProductPage = () => {
-    router.push('/product_view');
-  };
+export default function Sidebar({ route_list = [] }: SidebarProps) { // Default to empty array
+    const router = useRouter();
 
-  const goToStockView = () => {
-    router.push('/stock_view');
-  };
+    const routeHandler = (route: string) => {
+        router.push(route);
+    };
 
-  const goToPurchasedOrder = () => {
-    router.push('/purchase_order');
-  };
+    const logoutHandler = () => {
+      useAuthStore.getState().clearToken();
+      window.location.reload();
+    }
 
     return (
-      <div className="w-32
-       bg-black-500 text-white h-screen">
-        <ul className="space-y-5 p-">
-          <li><button onClick={goToProductPage} className="w-40  btn bg-red-500 text-white">Products</button></li>
-          <li><button onClick={goToStockView} className="w-40  btn bg-red-500 text-white">Stock Views</button></li>
-          <li><button onClick={goToPurchasedOrder} className="w-40  btn bg-red-500 text-white">Purchase Orders</button></li>
-          <li><button  className="w-40  btn bg-red-500 text-white">Transcript</button></li>
-        </ul>
-      </div>
+        <div className="flex flex-col gap-5 w-fit h-fit">
+            {route_list.map((route, index) => (
+                <div
+                    key={index}
+                    onClick={() => routeHandler(route.route)}
+                    className="cursor-pointer w-40 btn bg-red-500 text-white"
+                >
+                    {route.name}
+                </div>
+            ))}
+            <div className='btn' onClick={logoutHandler}>Logout</div>
+        </div>
     );
-  }
+}

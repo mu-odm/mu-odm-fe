@@ -11,7 +11,6 @@ const products = Array(10).fill({
 export default function Home() {
   return (
       <div className="flex-1 bg-white">
-        <Header title="Purchase Order" button1Text="Profile" button2Text="Settings" />
         <div className="p-8">
          <div className = "flex">
           <Sidebar />
