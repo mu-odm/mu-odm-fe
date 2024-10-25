@@ -45,7 +45,6 @@ export default function StockView() {
 
   return (
     <div className="flex-1 bg-white">
-      <Header title="Stock View" button1Text="Profile" button2Text="Settings" />
       <div className="p-8">
         <div className="flex">
           <Sidebar />
