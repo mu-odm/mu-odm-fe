@@ -4,6 +4,7 @@ import { useState } from 'react'; // Import useState
 import Header from '@/components/header';
 import Sidebar from '@/components/sidebar';
 import Card from '@/components/product_card';
+import Create_Card from '@/components/create_card';
 
 // Define a Product interface
 interface Product {

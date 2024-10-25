@@ -15,10 +15,7 @@ export default function Card({ title, description, imageUrl, warehouse, amount }
     >
       <img className="w-44 h-44 object-fit" src={imageUrl} alt={title} />
       <div className="px-6 py-4">
-        <div className="font-bold text-xl mb-2 text-white whitespace-nowrap overflow-auto ">{title}</div>
-        <p className="text-white text-base">{description}</p>
-        <p className="text-white">Warehouse: {warehouse}</p>
-        <p className="text-white">Amount: {amount}</p>
+        <div className="font-bold text-xl mb-2 text-white whitespace-nowrap overflow-auto ">+</div>
       </div>
     </div>
   );
