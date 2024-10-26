@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuthStore } from '@/stores/authStore';
+import { signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 interface Route {
@@ -20,8 +20,7 @@ export default function Sidebar({ route_list = [] }: SidebarProps) { // Default 
     };
 
     const logoutHandler = () => {
-      useAuthStore.getState().clearToken();
-      window.location.reload();
+        signOut();
     }
 
     return (
