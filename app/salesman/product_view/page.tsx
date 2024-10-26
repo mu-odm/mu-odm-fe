@@ -121,6 +121,16 @@ export default function Home() {
                 />
               </div>
             ))}
+            {/* Add Create_Card at the end of the grid */}
+            <div className="flex flex-col items-center" style={{ cursor: 'pointer' }}>
+              <Create_Card
+                title="Add New Product"
+                description="Click to add a new product"
+                imageUrl="" // You can provide a placeholder image
+                warehouse=""
+                amount={0}
+              />
+            </div>
           </div>
         </div>
       </div>
