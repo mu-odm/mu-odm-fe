@@ -103,9 +103,15 @@ export default function Home() {
     <div className="flex-1 bg-white">
       <div className="p-8">
         <div className="flex">
-          <div className="h-96 grid grid-cols-4 gap-x-4 gap-y-1 px-20 text-black">
-            {products.map((product: Product, index: number) => (  // Explicitly define the type for product
-              <div key={index} onClick={() => handleCardClick(product)} style={{ cursor: 'pointer' }}>
+          {/* Responsive grid layout */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {products.map((product: Product, index: number) => (
+              <div 
+                key={index} 
+                onClick={() => handleCardClick(product)} 
+                className="flex flex-col items-center" // Center items in the card
+                style={{ cursor: 'pointer' }}
+              >
                 <Card
                   title={product.name}
                   description={product.description}
@@ -120,30 +126,29 @@ export default function Home() {
       </div>
 
       {/* Product Detail Pane */}
-{isPaneVisible && selectedProduct && (
-  <div className="fixed inset-0 flex items-center justify-center bg-gray-700 bg-opacity-75 z-50">
-    <div className="bg-white p-8 rounded shadow-lg w-1/2">
-      {/* Centered Image */}
-      <div className="flex justify-center mb-4">
-        <img
-          src={selectedProduct.imageUrl}
-          alt={selectedProduct.name}
-          className="h-auto w-1/2 rounded" // Set width to 50% of the container
-        />
-      </div>
-      <h2 className="text-2xl font-bold mb-4 text-black">{selectedProduct.name}</h2>
-      <p className="text-black">Description: {selectedProduct.description}</p>
-      <p className="text-black">Warehouse: {selectedProduct.warehouse}</p>
-      <p className="text-black">Amount: {selectedProduct.amount}</p>
-      <div className="flex justify-end mt-4">
-        <button onClick={handleClosePane} className="bg-red-500 text-white px-4 py-2 rounded">
-          Close
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
+      {isPaneVisible && selectedProduct && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-700 bg-opacity-75 z-50">
+          <div className="bg-white p-8 rounded shadow-lg w-1/2">
+            {/* Centered Image */}
+            <div className="flex justify-center mb-4">
+              <img
+                src={selectedProduct.imageUrl}
+                alt={selectedProduct.name}
+                className="h-auto w-1/2 rounded" // Set width to 50% of the container
+              />
+            </div>
+            <h2 className="text-2xl font-bold mb-4 text-black">{selectedProduct.name}</h2>
+            <p className="text-black">Description: {selectedProduct.description}</p>
+            <p className="text-black">Warehouse: {selectedProduct.warehouse}</p>
+            <p className="text-black">Amount: {selectedProduct.amount}</p>
+            <div className="flex justify-end mt-4">
+              <button onClick={handleClosePane} className="bg-red-500 text-white px-4 py-2 rounded">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

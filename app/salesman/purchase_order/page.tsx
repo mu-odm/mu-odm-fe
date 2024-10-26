@@ -13,7 +13,7 @@ export default function Home() {
       <div className="flex-1 bg-white">
         <div className="p-8">
          <div className = "flex">
-          <Sidebar />
+        
           <div className="w-full grid grid-cols-1 gap-3 px-16 text-black">
             {products.map((product, index) => (
               <div key={index} className="border p-5 flex justify-between items-center">
