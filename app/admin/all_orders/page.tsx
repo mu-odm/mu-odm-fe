@@ -1,24 +1,13 @@
 'use client';
 
+import useOrder from "@/api/user/useOrder";
 import { useRouter } from "next/navigation";
 
 export default function AllOrders() {
 
     const router = useRouter();
 
-    const region = {
-        id: 1,
-        name: "North",
-        num_orders: 10,
-        route: "/admin/all_orders"
-    }
-
-    const regions = [
-        region,
-        region,
-        region,
-        region
-    ]
+    const { data: orders, isLoading, error } = useOrder();
 
     const routeHandler = (route: string, id: number) => {
         router.push(route + "/" + id);
@@ -30,10 +19,12 @@ export default function AllOrders() {
                 <div className="text-3xl">All Orders</div>
                 <div className="gap-2 flex flex-col">
                     {
-                        regions.map((region, index) => (
-                            <div key={index} className="flex justify-between btn" onClick={() => routeHandler(region.route, region.id)}>
-                                <div>{region.name} order: </div>
-                                <div>{region.num_orders} in active</div>
+                        orders && orders!.map((order: any) => (
+                            <div key={order.id} className="flex justify-between">
+                                <div>{order.purchase?.id}</div>
+                                <div>{order.id}</div>
+                                <div>{order.status}</div>
+                                <div>{order.region}</div>
                             </div>
                         ))
                     }

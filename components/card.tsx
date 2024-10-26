@@ -11,7 +11,7 @@ export default function Card({ card_detail }: any) {
     }
 
     return (
-        <div className="card card-compact bg-base-100 w-1/4 shadow-xl hover:cursor-pointer flex"
+        <div className="card card-compact bg-base-100 w-1/4 shadow-xl flex hover:cursor-pointer hover:scale-105 transition-transform"
             onClick={() => routeHandler(card_detail.route, card_detail.id)}
         >
             <div className="card-body">
@@ -19,7 +19,6 @@ export default function Card({ card_detail }: any) {
                     <div className="card-title">{card_detail.name}</div>
                     <div className='text-md font-bold'>({card_detail.amount})</div>
                 </div>
-                <p>size: {card_detail.size}</p>
                 <p>price: {card_detail.price}</p>
                 <p>status: {card_detail.status}</p>
                 <div className="card-actions justify-end">

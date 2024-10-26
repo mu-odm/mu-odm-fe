@@ -14,10 +14,15 @@ export default function Product({ params }: ProductProps) {
     const card_detail = {
         id: 1,
         name: "Shoes",
-        size: "xl",
         amount: 10,
         price: 100,
         status: "available",
+        size: [
+            { id: 1, name: "xl", additional_price: 10 },
+            { id: 2, name: "l", additional_price: 5 },
+            { id: 3, name: "m", additional_price: 2 },
+            { id: 4, name: "s", additional_price: 0 },
+        ],
         route: "/admin/manage_product"
     }
 
