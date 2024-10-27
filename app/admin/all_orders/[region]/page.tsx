@@ -1,52 +1,61 @@
-'use client';
+"use client";
 
+import { useOrder } from "@/api/user/useOrder";
+import type { Order } from "@/api/user/useOrder";
 import RouteBackButton from "@/components/route_back_button";
-import { useRouter } from "next/navigation";
+import useRouteHandler from "@/lib/routeHandler";
 
 interface RegionProps {
-    params: {
-        region: string;
-    };
+  params: {
+    region: string;
+  };
 }
 
 export default function Order({ params }: RegionProps) {
-    const router = useRouter();
-    const { region } = params;
+  const { region } = params;
+  const { data: orders, isLoading, error } = useOrder();
+  const navigateToRoute = useRouteHandler();
 
-    const this_region = {
-        id: 1,
-        name: 'north',
-    };
-
-    const orders = [
-        { id: 1, status: "available", region: "north" },
-        { id: 2, status: "available", region: "north" },
-        { id: 3, status: "available", region: "north" },
-        { id: 4, status: "available", region: "north" },
-        { id: 5, status: "available", region: "north" },
-    ];
-
-    const routeHandler = (orderId: number) => {
-        router.push(`/admin/all_orders/${region}/${orderId}`);
-    };
-
-    return (
-        <div className="">
-            <div className="flex flex-row items-center gap-3">
-                <RouteBackButton/>
-                <h1>Orders in Region: {region}</h1>
+  return (
+    <div className="">
+      <div className="flex flex-row items-center gap-3">
+        <RouteBackButton />
+        <h1>Orders in Region: {region}</h1>
+      </div>
+      <div className="grid grid-cols-2 gap-2 my-5">
+        {orders
+          ?.filter((order: Order) => order.region === region)
+          .map((order: Order) => (
+            <div
+              key={order.id}
+              className="p-3 border border-gray-300 rounded-md hover:scale-95 transition-transform cursor-pointer hover:bg-slate-900 duration-300 flex flex-col gap-3"
+              onClick={() =>
+                navigateToRoute(`/admin/all_orders/${region}`, order.id)
+              }
+            >
+              <div className="font-bold">Order ID: {order.id}</div>
+              <hr className="border-t border-gray-300 w-full my-2" />
+              <div>
+                <div className="flex flex-row justify-between">
+                  <div>Purchases:</div>
+                  <div>{order.purchases.length}</div>
+                </div>
+                <div className="flex flex-row justify-between">
+                  <div>Status:</div>
+                  <div
+                    className={
+                      order.status === "available"
+                        ? "text-green-500"
+                        : "text-red-500"
+                    }
+                  >
+                    {order.status}
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="grid grid-cols-2 gap-2 my-5">
-                {orders
-                    .filter((order) => order.region === this_region.name)
-                    .map((order) => (
-                        <div key={order.id} className="btn flex flex-row justify-between" onClick={() => routeHandler(order.id)}>
-                            <div>Order: {order.id}</div>
-                            <div>Status: {order.status}</div>
-               
-                        </div>
-                    ))}
-            </div>
-        </div>
-    );
+          ))}
+      </div>
+    </div>
+  );
 }

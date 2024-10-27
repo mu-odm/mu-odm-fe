@@ -2,14 +2,16 @@ import axios from "@/lib/axiosInstance";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSession } from "next-auth/react";
 
-interface Purchase {
+export interface Purchase {
   id: string;
+  order_id: string;
+  client_id: string;
   created_at: string;
 }
 
-interface Order {
+export interface Order {
   id: string;
-  purchase: Purchase;
+  purchases: Purchase[];
   status: string;
   region: string;
 }
@@ -25,12 +27,10 @@ const getOrders = async () => {
   return data;
 };
 
-const useOrder = () => {
+export const useOrder = () => {
   return useQuery<Order[]>({
     queryKey: ["orders"],
     queryFn: getOrders,
     staleTime: 1000 * 60 * 5,
   });
 };
-
-export default useOrder;

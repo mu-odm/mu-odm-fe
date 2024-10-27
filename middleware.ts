@@ -10,15 +10,15 @@ interface IPATH {
 
 export const PATH: IPATH[] = [
     {
-        pathname: "/admin/:id",
+        pathname: "/admin/*whatever",
         roles: ["ADMIN"],
     },
     {
-        pathname: "/salesman/:id",
+        pathname: "/salesman/*whatever",
         roles: ["SALESMAN", "ADMIN"],
     },
     {
-        pathname: "/home/:id",
+        pathname: "/home/*whatever",
         roles: ["SALESMAN", "ADMIN"],
     }
   ];
