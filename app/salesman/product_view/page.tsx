@@ -27,11 +27,11 @@ export default function Home() {
       try {
         const response = await axios.get("https://mu-odm-be.peerawitp.me/products", {
           headers: {
-            "Authorization": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlIjoiU0FMRVNNQU4iLCJzdWIiOiJqZGFyQGdtYWlsLmNvbSIsImlhdCI6MTcyOTk1NzkwMSwiZXhwIjoxNzMwMDQ0MzAxfQ.Ic-8SMYAR9JXZdv53iD6qKYS5dJVI_C6wFhhb2jrbHLVUFy-5rKXDwtkpuSF2I8pn-yw3F-rbNUoi1j3NNWctA"
+            "Authorization": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlIjoiU0FMRVNNQU4iLCJzdWIiOiJqZGFyQGdtYWlsLmNvbSIsImlhdCI6MTczMDAyNDIzNCwiZXhwIjoxNzMwMTEwNjM0fQ.mdoSfOce1Mnv2y69WvcJxpZes-c0PN4rcAYBb8t1J3jIBK4O9hp5iAcY6v5qzN12yonNuX3I4F4PYH724Yp0wQ"
           }
         });
 
-        // Assuming the response data is an array of products
+        // Assuming the response data is an array of productseyJhbGciOiJIUzUxMiJ9
         setProducts(response.data);
       } catch (error) {
         console.error("Error fetching products:", error);
