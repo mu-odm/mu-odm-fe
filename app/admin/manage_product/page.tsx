@@ -5,7 +5,6 @@ export default function ManageProduct() {
     const card_detail = {
         id: 1,
         name: "Shoes",
-        size: "xl",
         price: 100,
         amount: 10,
         status: "active",

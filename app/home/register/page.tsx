@@ -1,21 +1,33 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import useUser from "@/api/user/useUser";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { set } from "react-hook-form";
 
 interface FormData {
-  name: string;
+  username: string;
   email: string;
   password: string;
   confirmPassword: string;
+  region: string;
 }
 
 const RegisterPage: React.FC = () => {
+
+  const user = useUser();
+  const router = useRouter();
+
   const [formData, setFormData] = useState<FormData>({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    region: "",
   });
+
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
@@ -25,44 +37,59 @@ const RegisterPage: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     e.preventDefault();
+    
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
     if (formData.password !== formData.confirmPassword) {
-      console.log('Passwords do not match');
+      setErrorMessage("Passwords do not match");
       return;
     }
-    console.log('Form data submitted:', formData);
+
+    try {
+      const res = await user!.mutateAsync({
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        region: formData.region,
+      });
+      setSuccessMessage("Registration successful! Please log in.");
+      setFormData({
+        username: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        region: "",
+      });
+
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage("Registration failed. Please try again.");
+      } else {
+        setErrorMessage("An unexpected error occurred.");
+      }
+    }
   };
 
   return (
     <div className="flex h-screen bg-white justify-center items-center p-10">
       <div className="flex flex-col justify-center items-center w-full max-w-lg">
-        {/* ใส่ Image */}
-        <img
-          src="/path-to-your-logo.png"
-          alt="Logo"
-          className="mb-4 w-16 h-16"
-        />
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">Create Your Account</h1>
+        <h1 className="text-2xl font-bold text-gray-800 mb-6">
+          Create Your Account
+        </h1>
+
+        {errorMessage && (
+          <div className="text-red-500 mb-4">{errorMessage}</div>
+        )}
+        {successMessage && (
+          <div className="text-green-500 mb-4">{successMessage}</div>
+        )}
 
         <form onSubmit={handleSubmit} className="w-full">
-          {/* ช่อง Name */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Name
-            </label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full p-3 text-sm border border-gray-300 rounded-md"  
-              placeholder="Enter your name"
-              required
-            />
-          </div>
-
-          {/* ช่อง Email */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Email
@@ -72,13 +99,27 @@ const RegisterPage: React.FC = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full p-3 text-sm border border-gray-300 rounded-md"  
+              className="w-full p-3 text-sm border border-gray-300 rounded-md"
               placeholder="Enter your email address"
               required
             />
           </div>
 
-          {/* ช่อง pw */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Username
+            </label>
+            <input
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              className="w-full p-3 text-sm border border-gray-300 rounded-md"
+              placeholder="Enter your name"
+              required
+            />
+          </div>
+
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Password
@@ -88,13 +129,12 @@ const RegisterPage: React.FC = () => {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full p-3 text-sm border border-gray-300 rounded-md"  
+              className="w-full p-3 text-sm border border-gray-300 rounded-md"
               placeholder="Enter your password"
               required
             />
           </div>
 
-          {/* ช่อง confirm pw */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Confirm Password
@@ -104,23 +144,36 @@ const RegisterPage: React.FC = () => {
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="w-full p-3 text-sm border border-gray-300 rounded-md"  
+              className="w-full p-3 text-sm border border-gray-300 rounded-md"
               placeholder="Confirm your password"
               required
             />
           </div>
 
-          {/* ปุ่ม Create Account */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Region
+            </label>
+            <input
+              type="text"
+              name="region"
+              value={formData.region}
+              onChange={handleChange}
+              className="w-full p-3 text-sm border border-gray-300 rounded-md"
+              placeholder="Enter your region"
+              required
+            />
+          </div>
+
           <button
             type="submit"
             className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-md mb-4"
           >
-            Create Account
+            Register
           </button>
 
-          {/* link ไปหน้า Login */}
           <div className="mt-2 text-sm text-right">
-            Already have an account?{' '}
+            Already have an account?{" "}
             <a href="/home/login" className="text-red-500 hover:underline">
               Login
             </a>

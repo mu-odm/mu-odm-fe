@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
+import NextAuthProvider from "@/provider/NextAuthProvider";
+import QueryClientProvider from "@/provider/QueryClientProvider";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -17,7 +20,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="bg-white">
       <body className={`${inter.className}`}>
-        {children}
+        <NextAuthProvider>
+          <QueryClientProvider>
+            {children}
+          </QueryClientProvider>
+        </NextAuthProvider>
       </body>
     </html>
   );

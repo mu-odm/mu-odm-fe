@@ -1,3 +1,5 @@
+'use client';
+
 import * as React from "react"
 
 import { Button } from "@/components/ui/button"
@@ -18,8 +20,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { ProductDialog } from "./product_size_dialog"
+import RouteBackButton from "./route_back_button";
 
 export function ProductManageForm({ card_detail }: any) {
+
+  
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -67,9 +74,25 @@ export function ProductManageForm({ card_detail }: any) {
             </div>
           </div>
         </form>
+        <div className="mt-10">
+          <div className="my-2 font-bold">Size</div>
+          <div className="flex flex-col gap-3">
+            {
+              card_detail.size.map((size: any) => (
+                <div key={size.id} className="flex flex-row justify-between border p-2 rounded-md">
+                  <div>{size.name}</div>
+                  <div>+{size.additional_price} Baht</div>
+                </div>
+              ))
+            }
+          </div>
+          <div className="w-full">
+            <ProductDialog/>
+          </div>
+        </div>
       </CardContent>
       <CardFooter className="flex justify-between">
-        <Button variant="outline">Back</Button>
+        <RouteBackButton/>
         <Button>Save</Button>
       </CardFooter>
     </Card>
