@@ -1,11 +1,9 @@
 "use client";
 
 import { useState, useEffect } from 'react'; // Import useState and useEffect
-import axios from 'axios';
-import Header from '@/components/header';
-import Sidebar from '@/components/sidebar';
 import Card from '@/components/product_card';
 import Create_Card from '@/components/create_card';
+import fetchProduct, { ApiProduct } from "@/api/user/useProduct";
 
 interface Product {
   name: string;
@@ -20,25 +18,24 @@ export default function Home() {
   const [products, setProducts] = useState<Product[]>([]); // State to store products
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isPaneVisible, setIsPaneVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [error, setError] = useState<string | null>(null); // Error state
 
-  // Fetch products from the API
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get("https://mu-odm-be.peerawitp.me/products", {
-          headers: {
-            "Authorization": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJyb2xlIjoiU0FMRVNNQU4iLCJzdWIiOiJqZGFyQGdtYWlsLmNvbSIsImlhdCI6MTczMDAyNDIzNCwiZXhwIjoxNzMwMTEwNjM0fQ.mdoSfOce1Mnv2y69WvcJxpZes-c0PN4rcAYBb8t1J3jIBK4O9hp5iAcY6v5qzN12yonNuX3I4F4PYH724Yp0wQ"
-          }
-        });
-
-        // Assuming the response data is an array of productseyJhbGciOiJIUzUxMiJ9
-        setProducts(response.data);
-      } catch (error) {
-        console.error("Error fetching products:", error);
+        const response = await fetchProduct(); // Call your API function
+        console.log("Fetched Products:", response);
+        setProducts(response); // Set products state
+      } catch (err) {
+        setError("Error loading products"); // Handle errors
+        console.error(err);
+      } finally {
+        setIsLoading(false); // Set loading to false
       }
     };
 
-    fetchProducts(); // Call the fetch function when the component mounts
+    fetchData();
   }, []);
 
   const handleCardClick = (product: Product) => {
