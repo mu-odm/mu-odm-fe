@@ -1,17 +1,14 @@
 'use client';
 
-import useOrder from "@/api/user/useOrder";
-import { useRouter } from "next/navigation";
+import { Order, useOrder } from "@/api/user/useOrder";
+import useRouteHandler from "@/lib/routeHandler";
 
 export default function AllOrders() {
 
-    const router = useRouter();
-
     const { data: orders, isLoading, error } = useOrder();
+    const navigateToRoute = useRouteHandler();
 
-    const routeHandler = (route: string, id: number) => {
-        router.push(route + "/" + id);
-    }
+    const uniqueRegions = orders ? Array.from(new Set(orders.map((order: Order) => order.region))) : [];
 
     return (
         <div className="flex flex-col h-[40rem] justify-between">  
@@ -19,12 +16,20 @@ export default function AllOrders() {
                 <div className="text-3xl">All Orders</div>
                 <div className="gap-2 flex flex-col">
                     {
-                        orders && orders!.map((order: any) => (
-                            <div key={order.id} className="flex justify-between">
-                                <div>{order.purchase?.id}</div>
-                                <div>{order.id}</div>
-                                <div>{order.status}</div>
-                                <div>{order.region}</div>
+                        uniqueRegions?.map((region: any) => (
+                            <div key={region} className="flex justify-between btn" 
+                                onClick={() => navigateToRoute(`/admin/all_orders`, region)}
+                            >
+                                <div className="flex flex-row gap-2 font-bold">
+                                    <div>Region:</div>
+                                    <div className="text-red-500">{region}</div>
+                                </div>
+                                <div className="flex flex-row gap-2">
+                                    <div>Orders in region:</div>
+                                    <div>
+                                        {orders?.filter((order: Order) => order.region === region).length}
+                                    </div>
+                                </div>
                             </div>
                         ))
                     }
