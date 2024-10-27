@@ -8,10 +8,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             route: "/salesman/product_view"
         },
         {
-            name: "Stock Views",
-            route: "/salesman/stock_view"
-        },
-        {
             name: "Purchase Orders",
             route: "/salesman/purchase_order"
         },
@@ -24,7 +20,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     return (
         <div className="flex-col h-fit bg-white p-10">
             <div className="bg-red-500 h-fit p-6 flex gap-5 justify-between rounded-md mb-10">
-                <div className="text-6xl text-white">All Order</div>
+                <div className="text-6xl text-white">Salesman Manager</div>
                 <div className="gap-5 flex">
                     <div className="btn">Personal Information</div>
                     <div className="btn">Setting</div>
