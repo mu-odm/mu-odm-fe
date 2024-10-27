@@ -1,7 +1,8 @@
 'use client'
 
-import { useForm } from "react-hook-form"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,22 +11,38 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ProductSize, useCreateProductSize } from "@/api/user/useProductSize";
 
-export function ProductDialog() {
-  const { register, handleSubmit, formState: { errors } } = useForm()
+export function ProductDialog({ product_id, refetch }: { product_id: string, refetch: () => void }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const { register, handleSubmit, formState: { errors } } = useForm();
+  const createProductSize = useCreateProductSize();
 
-  const onSubmit = (data: any) => {
-    console.log("name:", data.name)
-    console.log("additional_price:", data.additional_price)
-  }
+  const onSubmit = async (data: any) => {
+    const productSize: ProductSize = {
+      size: data.name,
+      additional_price: data.additional_price,
+      product_id: product_id
+    };
+
+    try {
+      await createProductSize.mutateAsync(productSize);
+      refetch();
+      setIsOpen(false);
+    } catch (error) {
+      console.error("Error creating product size:", error);
+    }
+  };
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="w-full my-3" variant="outline">Add More Size</Button>
+        <Button className="w-full my-3" variant="outline" onClick={(event) => event.stopPropagation()}>
+          Add More Size
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -34,7 +51,7 @@ export function ProductDialog() {
             Create size for this product.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)} onClick={(event) => event.stopPropagation()}>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="name" className="text-right">
@@ -70,5 +87,5 @@ export function ProductDialog() {
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

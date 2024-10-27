@@ -1,9 +1,8 @@
 "use client";
 
-import useUser from "@/api/user/useUser";
-import { useRouter } from "next/navigation";
+import { useCreateUser } from "@/api/user/useUser";
+import useRouteHandler from "@/lib/routeHandler";
 import React, { useState } from "react";
-import { set } from "react-hook-form";
 
 interface FormData {
   username: string;
@@ -15,8 +14,7 @@ interface FormData {
 
 const RegisterPage: React.FC = () => {
 
-  const user = useUser();
-  const router = useRouter();
+  const user = useCreateUser();
 
   const [formData, setFormData] = useState<FormData>({
     username: "",
@@ -28,6 +26,8 @@ const RegisterPage: React.FC = () => {
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const navigateToRoute = useRouteHandler();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
@@ -57,7 +57,6 @@ const RegisterPage: React.FC = () => {
         password: formData.password,
         region: formData.region,
       });
-      setSuccessMessage("Registration successful! Please log in.");
       setFormData({
         username: "",
         email: "",
@@ -65,6 +64,8 @@ const RegisterPage: React.FC = () => {
         confirmPassword: "",
         region: "",
       });
+
+      navigateToRoute("/home", "login");
 
     } catch (error) {
       if (error instanceof Error) {

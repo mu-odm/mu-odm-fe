@@ -2,6 +2,7 @@
 
 import { useOrder } from "@/api/user/useOrder";
 import type { Order } from "@/api/user/useOrder";
+import { usePurchase } from "@/api/user/usePurchase";
 import RouteBackButton from "@/components/route_back_button";
 import useRouteHandler from "@/lib/routeHandler";
 
@@ -13,7 +14,8 @@ interface RegionProps {
 
 export default function Order({ params }: RegionProps) {
   const { region } = params;
-  const { data: orders, isLoading, error } = useOrder();
+  const { data: orders, isLoading: orderLoading, error: orderError } = useOrder();
+  const { data: purchases, isLoading: purchaseLoading, error: purchaseError } = usePurchase();
   const navigateToRoute = useRouteHandler();
 
   return (
@@ -38,7 +40,7 @@ export default function Order({ params }: RegionProps) {
               <div>
                 <div className="flex flex-row justify-between">
                   <div>Purchases:</div>
-                  <div>{order.purchases.length}</div>
+                  <div>{purchases?.filter((purchase) => purchase?.orderID === order.id).length}</div>
                 </div>
                 <div className="flex flex-row justify-between">
                   <div>Status:</div>

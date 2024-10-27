@@ -1,26 +1,25 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import useRouteHandler from "@/lib/routeHandler";
 
-export default function Card({ card_detail }: any) {
+export default function Card({ product }: any) {
 
-    const router = useRouter();
-
-    const routeHandler = (route: string, id: string) => {
-        router.push(route + "/" + id);
-    }
+    const navigateToRoute = useRouteHandler()
 
     return (
-        <div className="card card-compact bg-base-100 w-1/4 shadow-xl flex hover:cursor-pointer hover:scale-105 transition-transform"
-            onClick={() => routeHandler(card_detail.route, card_detail.id)}
+        <div className="card card-compact bg-base-100 shadow-xl flex hover:cursor-pointer hover:scale-95 transition-transform"
+            onClick={() => navigateToRoute(
+                '/admin/manage_product',
+                product.id
+            )}
         >
             <div className="card-body">
-                <div className='flex flex-row justify-between items-center'>
-                    <div className="card-title">{card_detail.name}</div>
-                    <div className='text-md font-bold'>({card_detail.amount})</div>
+                <div className='flex flex-row justify-between items-center overflow-clip'>
+                    <div className="card-title">{product.name}</div>
                 </div>
-                <p>price: {card_detail.price}</p>
-                <p>status: {card_detail.status}</p>
+                <p>remaining: {product.remaining}</p>
+                <p>price: {product.price}</p>
+                <p>status: {product.status}</p>
                 <div className="card-actions justify-end">
                 </div>
             </div>

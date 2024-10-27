@@ -1,22 +1,20 @@
+'use client';
+
+import { Product, useGetProducts } from "@/api/user/useProduct";
 import Card from "@/components/card";
 
 export default function ManageProduct() {
 
-    const card_detail = {
-        id: 1,
-        name: "Shoes",
-        price: 100,
-        amount: 10,
-        status: "active",
-        route: "/admin/manage_product"
-    }
+    const { data: products, isLoading: productLoading, error: productError } = useGetProducts();
 
     return (
-        <div className="flex flex-row flex-wrap gap-10 justify-between">
+        <div className="grid grid-cols-3 w-full gap-10 justify-between">
             {
-                Array(10).fill(0).map((_, index) => (
-                    <Card card_detail={card_detail} key={index} />
-                ))
+                products?.map((product: Product) => {
+                    return (
+                        <Card key={product.id} product={product} />
+                    );
+                })
             }
         </div>
     )
