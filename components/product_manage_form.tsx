@@ -51,9 +51,8 @@ export function ProductManageForm({ product }: { product: Product }) {
 
   const saveHandler = async (data: any) => {
     try {
-      console.log("Updating product:", data);
+      console.log("data", data);
       await updateProductMutation.mutateAsync({ id: product?.id, product: data });
-      console.log("Product updated successfully");
     } catch (error) {
       console.error("Error updating product:", error);
     }

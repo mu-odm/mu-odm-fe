@@ -13,7 +13,7 @@ interface ProductProps {
 export default function Product({ params }: ProductProps) {
     const { productID } = params;
 
-    const { data: product, isLoading, error } = useGetProduct(productID);
+    const { data: product, isLoading, error, refetch } = useGetProduct(productID);
 
     if (isLoading) {
         return <LoadingAnimation/>

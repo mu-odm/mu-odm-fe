@@ -28,22 +28,24 @@ export default function AllOrders() {
                                     <div>Region:</div>
                                     <div className="text-red-500">{region}</div>
                                 </div>
-                                <div className="flex flex-row gap-2">
+                                <div className="flex flex-row gap-2 font-bold">
                                     <div>Orders in region:</div>
-                                    <div>
-                                        {orders?.filter((order: Order) => order.region === region).length}
-                                    </div>
+                                    <div className="text-blue-500">{
+                                        orders?.filter((order: Order) => order.region === region).length
+                                    }</div>
+                                </div>
+                                <div className="flex flex-row gap-2 font-bold">
+                                    <div>Available Orders:</div>
+                                    <div className="text-green-500">{
+                                        orders?.filter((order: Order) => order.status === "Available" && order.region == 'North').length
+                                    }</div>
                                 </div>
                             </div>
                         ))
                     }
                 </div>
             </div>
-            <div>
-                <div>Orders in active: {
-                    orders?.filter((order: Order) => order.status === "available").length
-                }</div>
-            </div>
+  
         </div>
     )
 }
