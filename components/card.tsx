@@ -19,7 +19,12 @@ export default function Card({ product }: any) {
                 </div>
                 <p>remaining: {product.remaining}</p>
                 <p>price: {product.price}</p>
-                <p>status: {product.status}</p>
+                <div className="flex flex-row w-fit gap-2">
+                    <p>status:</p>
+                    <p className={
+                        product.status === 'Available' ? 'text-green-500' : 'text-red-500'
+                    }>{product.status}</p>
+                </div>
                 <div className="card-actions justify-end">
                 </div>
             </div>
