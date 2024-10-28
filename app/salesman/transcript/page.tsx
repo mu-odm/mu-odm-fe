@@ -6,11 +6,11 @@ import { useState } from 'react';
 import Sidebar from '@/components/sidebar';
 import Header from '@/components/header';
 import { useOrder, Order } from '@/api/user/useOrder';
-import { usePurchaseProducts, PurchaseProduct } from '@/api/user/usePurchaseProduct';
+import { usePurchaseProduct, PurchaseProduct } from '@/api/user/usePurchaseProduct';
 
 export default function StockView() {
   const { data: orders, isLoading: isLoadingOrders, error: ordersError } = useOrder();
-  const { data: purchaseProducts, isLoading: isLoadingPurchaseProducts, error: purchaseProductsError } = usePurchaseProducts();
+  const { data: purchaseProducts, isLoading: isLoadingPurchaseProducts, error: purchaseProductsError } = usePurchaseProduct();
 
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 

@@ -1,11 +1,12 @@
 import axios from "@/lib/axiosInstance";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSession } from "next-auth/react";
+import { User } from "@/api/user/useUser";
 
 export interface Purchase {
   id: string;
-  order_id: string;
-  client_id: string;
+  orderID: string;
+  clientID: string;
   created_at: string;
 }
 
@@ -14,6 +15,7 @@ export interface Order {
   purchases: Purchase[];
   status: string;
   region: string;
+  user: User
 }
 
 const getOrders = async () => {

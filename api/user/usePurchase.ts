@@ -4,8 +4,8 @@ import { getSession } from "next-auth/react";
 
 export interface Purchase {
     id: string;
-    order_id: string;
-    client_id: string;
+    orderID: string;
+    clientID: string;
     created_at: string;
 }
 

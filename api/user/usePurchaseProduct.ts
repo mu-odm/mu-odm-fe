@@ -1,24 +1,22 @@
-// Updated API Hook: app/api/user/usePurchase.ts
-
 import axios from "@/lib/axiosInstance";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSession } from "next-auth/react";
 
-export interface PurchaseProduct {
-  id: {
+interface PurchaseProductKey {
     purchase_id: string;
     product_id: string;
-  };
-  productID: string;
-  clientID: string;
-  amount: number;
-  created_at?: string; // Add if necessary
 }
 
-// Fetch function for Purchase Products
+export interface PurchaseProduct {
+    id: PurchaseProductKey;
+    productID: string;
+    clientID: string;
+    amount: number;
+}
+
 const getPurchaseProducts = async () => {
   const session = await getSession();
-  const { data } = await axios.get<PurchaseProduct[]>("/purchases_product", {
+  const { data } = await axios.get<PurchaseProduct[]>("/purchase_product", {
     headers: {
       Authorization: `Bearer ${session?.accessToken}`,
     },
@@ -27,10 +25,9 @@ const getPurchaseProducts = async () => {
   return data;
 };
 
-// Custom hook to use the purchase products data
-export const usePurchaseProducts = () => {
+export const usePurchaseProduct = () => {
   return useQuery<PurchaseProduct[]>({
-    queryKey: ["purchaseProducts"],
+    queryKey: ["purchase_products"],
     queryFn: getPurchaseProducts,
     staleTime: 1000 * 60 * 5,
   });

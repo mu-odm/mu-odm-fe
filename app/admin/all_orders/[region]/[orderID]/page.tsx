@@ -4,6 +4,7 @@ import { Order, useOrder } from "@/api/user/useOrder";
 import PurchaseCollapse from "@/components/purchase_collapse";
 import RouteBackButton from "@/components/route_back_button";
 import type { Purchase } from "@/api/user/useOrder";
+import { usePurchase } from "@/api/user/usePurchase";
 
 interface OrderProps {
     params: {
@@ -13,10 +14,11 @@ interface OrderProps {
 
 export default function Purchase({ params }: OrderProps) {
     const { orderID } = params;
-    const { data: orders, isLoading, error } = useOrder();
+    const { data: orders, isLoading: orderLoading, error: orderError } = useOrder();
+    const { data: purchases, isLoading: purchaseLoading, error: purchaseError } = usePurchase();
 
     const order = orders?.find((order: Order) => order.id === orderID);
-    const purchases = order?.purchases;
+    const purchasesInOrder = purchases?.filter((purchase: Purchase) => purchase.orderID === orderID);
 
     return (
         <div>
@@ -26,9 +28,9 @@ export default function Purchase({ params }: OrderProps) {
             </div>
             
             <div className="flex flex-col gap-3 my-5">
-                {purchases?.map((purchase: Purchase) => {
+                {purchasesInOrder?.map((purchase: Purchase) => {
                     return (
-                        <div key={purchase.id} className="   ">
+                        <div key={purchase.id}>
                             <PurchaseCollapse purchase={purchase} />
                         </div>
                     );
