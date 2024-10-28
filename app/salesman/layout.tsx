@@ -14,6 +14,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {
             name: "Transcript",
             route: "/salesman/transcript"
+        },
+        {
+            name: "Client Manager",
+            route: "/salesman/client_manager"
         }
     ];
   

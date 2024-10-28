@@ -4,6 +4,15 @@ import { useState } from 'react';
 import { useUpdateProduct, Product } from '@/api/user/useProduct'; // Import your API hook
 import { ProductManageForm } from './product_manage_form sm'; // Import your form
 
+// Define a type for the product details
+interface ProductDetail {
+  name: string;
+  price: number;
+  amount: number;
+  status: string;
+  size: string[]; // Adjust as necessary
+}
+
 type CardProps = {
   id: string;
   title: string;
@@ -90,6 +99,11 @@ export default function Card({ id, title, price, status, amount }: CardProps) {
                 status: editedStatus,
                 size: [], // Replace this with actual size data if available
               }} 
+              onChange={(updatedCardDetail: ProductDetail) => {
+                setEditedTitle(updatedCardDetail.name);
+                setEditedPrice(updatedCardDetail.price);
+                setEditedAmount(updatedCardDetail.amount);
+              }}
             />
 
             <div className="flex justify-end space-x-4">

@@ -1,7 +1,6 @@
-'use client';
+"use client";
 
-import * as React from "react";
-import { Button } from "@/components/ui/button";
+import React from "react";
 import {
   Card,
   CardContent,
@@ -19,9 +18,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import RouteBackButton from "./route_back_button";
 
-export function ProductManageForm({ card_detail }: any) {
+// Define a type for the product details
+interface ProductDetail {
+  name: string;
+  price: number;
+  amount: number;
+  status: string;
+  size: string[]; // Adjust as necessary
+}
+
+interface ProductManageFormProps {
+  card_detail: ProductDetail;
+  onChange: (updatedCardDetail: ProductDetail) => void;
+}
+
+export function ProductManageForm({ card_detail, onChange }: ProductManageFormProps) {
   return (
     <Card className="w-full">
       <CardHeader>
@@ -37,6 +49,7 @@ export function ProductManageForm({ card_detail }: any) {
                 id="product_name" 
                 placeholder="Your Product Name" 
                 value={card_detail.name}
+                onChange={(e) => onChange({ ...card_detail, name: e.target.value })}
               />
             </div>
             <div className="flex flex-col space-y-1.5">
@@ -45,6 +58,7 @@ export function ProductManageForm({ card_detail }: any) {
                 id="price" 
                 placeholder="Your Product Price" 
                 value={card_detail.price}
+                onChange={(e) => onChange({ ...card_detail, price: Number(e.target.value) })}
               />
             </div>
             <div className="flex flex-col space-y-1.5">
@@ -53,6 +67,7 @@ export function ProductManageForm({ card_detail }: any) {
                 id="amount" 
                 placeholder="Your Product Amount" 
                 value={card_detail.amount}
+                onChange={(e) => onChange({ ...card_detail, amount: Number(e.target.value) })}
               />
             </div>
             <div className="flex flex-col space-y-1.5">
@@ -75,3 +90,4 @@ export function ProductManageForm({ card_detail }: any) {
     </Card>
   );
 }
+
