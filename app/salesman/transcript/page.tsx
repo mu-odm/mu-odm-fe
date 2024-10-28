@@ -1,39 +1,62 @@
 // app/stock_view/page.tsx
 
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import "@/app/globals.css";
 import { useOrder, Order } from '@/api/user/useOrder';
 import { usePurchase, Purchase } from '@/api/user/usePurchase';
 import { usePurchaseProduct, PurchaseProduct } from '@/api/user/usePurchaseProduct';
 import { useGetProducts, Product } from '@/api/user/useProduct';
+import { useGetAllUsers } from '@/api/user/useUser';
+import { useSession } from 'next-auth/react';
 
 export default function StockView() {
   const { data: orders, isLoading: isLoadingOrders, error: ordersError } = useOrder();
   const { data: purchases, isLoading: isLoadingPurchases, error: purchasesError } = usePurchase();
   const { data: purchaseProducts, isLoading: isLoadingPurchaseProducts, error: purchaseProductsError } = usePurchaseProduct();
   const { data: products, isLoading: isLoadingProducts, error: productsError } = useGetProducts();
+  const { data: allUsers, isLoading: isLoadingAllUsers, error: allUsersError } = useGetAllUsers();
+
+  const session = useSession();
+  const [userRegion, setUserRegion] = useState<string | null>(null);
+  const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
+
+  useEffect(() => {
+    if (!isLoadingAllUsers && session.data && allUsers) {
+      const foundUser = allUsers.find((user) => user.email === session?.data?.user?.sub);
+      setUserRegion(foundUser?.region || null);
+    }
+  }, [isLoadingAllUsers, session.data, allUsers]);
+
+  useEffect(() => {
+    if (userRegion && orders) {
+      const regionFilteredOrders = orders.filter((order) => order.region === userRegion);
+      setFilteredOrders(regionFilteredOrders);
+    }
+  }, [userRegion, orders]);
 
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
-  if (isLoadingOrders || isLoadingPurchases || isLoadingPurchaseProducts || isLoadingProducts) return <div>Loading...</div>;
-  if (ordersError || purchasesError || purchaseProductsError || productsError) return (
-    <div>
-      <p>Error fetching data:</p>
-      <p>Orders Error: {ordersError?.message}</p>
-      <p>Purchases Error: {purchasesError?.message}</p>
-      <p>Purchase Products Error: {purchaseProductsError?.message}</p>
-      <p>Products Error: {productsError?.message}</p>
-    </div>
-  );
+  if (isLoadingOrders || isLoadingPurchases || isLoadingPurchaseProducts || isLoadingProducts || isLoadingAllUsers) {
+    return <div>Loading...</div>;
+  }
+  if (ordersError || purchasesError || purchaseProductsError || productsError || allUsersError) {
+    return (
+      <div>
+        <p>Error fetching data:</p>
+        <p>Orders Error: {ordersError?.message}</p>
+        <p>Purchases Error: {purchasesError?.message}</p>
+        <p>Purchase Products Error: {purchaseProductsError?.message}</p>
+        <p>Products Error: {productsError?.message}</p>
+        <p>Users Error: {allUsersError?.message}</p>
+      </div>
+    );
+  }
 
-  // Map product IDs to names for easy lookup
-// Map product IDs to names for easy lookup, using an empty object as default
-const productMap = products?.reduce((map, product) => {
-  map[product.id] = product.name;
-  return map;
-}, {} as Record<string, string>) || {};
-
+  const productMap = products?.reduce((map, product) => {
+    map[product.id] = product.name;
+    return map;
+  }, {} as Record<string, string>) || {};
 
   const toggleDropdown = (orderId: string) => {
     setOpenDropdown((prev) => (prev === orderId ? null : orderId));
@@ -44,8 +67,8 @@ const productMap = products?.reduce((map, product) => {
       <div className="p-8">
         <div className="flex justify-center">
           <div className="w-full max-w-4xl">
-            {orders && orders.length > 0 ? (
-              orders.map((order) => (
+            {filteredOrders && filteredOrders.length > 0 ? (
+              filteredOrders.map((order) => (
                 <div key={order.id} className="border rounded-lg mb-4 shadow-md">
                   <button 
                     className="flex justify-between items-center w-full p-4 text-left bg-white hover:bg-gray-300 rounded-t-lg"
@@ -114,7 +137,7 @@ const productMap = products?.reduce((map, product) => {
                 </div>
               ))
             ) : (
-              <div>No orders found.</div>
+              <div>No orders found for your region.</div>
             )}
           </div>
         </div>
