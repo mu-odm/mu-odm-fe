@@ -3,6 +3,7 @@
 import { useOrder } from "@/api/user/useOrder";
 import type { Order } from "@/api/user/useOrder";
 import { usePurchase } from "@/api/user/usePurchase";
+import LoadingAnimation from "@/components/loading_animation";
 import RouteBackButton from "@/components/route_back_button";
 import useRouteHandler from "@/lib/routeHandler";
 
@@ -17,6 +18,10 @@ export default function Order({ params }: RegionProps) {
   const { data: orders, isLoading: orderLoading, error: orderError } = useOrder();
   const { data: purchases, isLoading: purchaseLoading, error: purchaseError } = usePurchase();
   const navigateToRoute = useRouteHandler();
+
+  if (orderLoading || purchaseLoading) {
+    return <LoadingAnimation/>
+  }
 
   return (
     <div className="">
@@ -46,7 +51,7 @@ export default function Order({ params }: RegionProps) {
                   <div>Status:</div>
                   <div
                     className={
-                      order.status === "available"
+                      order.status === "Available"
                         ? "text-green-500"
                         : "text-red-500"
                     }

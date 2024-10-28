@@ -6,6 +6,7 @@ import { useGetProducts } from "@/api/user/useProduct";
 import { usePurchase } from "@/api/user/usePurchase";
 import { usePurchaseProduct } from "@/api/user/usePurchaseProduct";
 import useRouteHandler from "@/lib/routeHandler";
+import LoadingAnimation from "./loading_animation";
 
 interface PurchaseCollapseProps {
     purchase: Purchase;
@@ -22,7 +23,7 @@ const PurchaseCollapse: React.FC<PurchaseCollapseProps> = ({ purchase }) => {
     const navigateToRoute = useRouteHandler();
 
     if (purchaseLoading || clientLoading || productLoading || purchaseProductLoading || orderLoading) {
-        return <p>Loading...</p>;
+        return <LoadingAnimation/>
     }
 
     const purchaseData = purchases?.find((p: Purchase) => p.id === purchase.id);

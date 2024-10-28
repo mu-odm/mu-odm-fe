@@ -77,10 +77,10 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-white justify-center items-center p-10">
+    <div className="flex h-screen bg-white justify-center items-center p-10 w-full">
       <div className="flex flex-col justify-center items-center w-full max-w-lg">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">
-          Create Your Account
+          Register
         </h1>
 
         {errorMessage && (
@@ -173,12 +173,13 @@ const RegisterPage: React.FC = () => {
             Register
           </button>
 
-          <div className="mt-2 text-sm text-right">
-            Already have an account?{" "}
-            <a href="/home/login" className="text-red-500 hover:underline">
+          <div className="flex flex-row gap-2 mt-2 text-sm justify-start">
+            <p>Already have an account?</p>
+            <a href="./login" className="text-red-500 hover:underline">
               Login
             </a>
           </div>
+
         </form>
       </div>
     </div>

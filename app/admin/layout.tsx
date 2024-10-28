@@ -1,4 +1,5 @@
 import Sidebar from "@/components/sidebar";
+import { Suspense } from "react";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   
@@ -17,7 +18,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     return (
         <div className="flex-col h-fit bg-white p-10">
             <div className="bg-red-500 h-fit p-6 flex gap-5 justify-between rounded-md mb-10">
-                <div className="text-6xl text-white">All Order</div>
+                <div className="text-6xl text-white">MU-ODM</div>
                 <div className="gap-5 flex">
                     <div className="btn">Personal Information</div>
                     <div className="btn">Setting</div>

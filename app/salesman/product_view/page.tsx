@@ -3,10 +3,15 @@
 import Card from '@/components/product_card';
 import Create_Card from '@/components/create_card';
 import { Product, useGetProducts } from "@/api/user/useProduct";
+import LoadingAnimation from '@/components/loading_animation';
 
 export default function Home() {
   // Use the useGetProducts hook for data fetching
   const { data: products, isLoading, error } = useGetProducts();
+
+  if (isLoading) {
+    return <LoadingAnimation/>
+  }
 
   return (
     <div className="flex-1 bg-white">
@@ -38,9 +43,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-
-      {/* Loading and Error states */}
-      {isLoading && <p>Loading...</p>}
       {error && <p className="text-red-500">Error loading products</p>}
     </div>
   );

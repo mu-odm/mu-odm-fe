@@ -1,6 +1,7 @@
 'use client';
 
 import { useGetProduct } from "@/api/user/useProduct";
+import LoadingAnimation from "@/components/loading_animation";
 import { ProductManageForm } from "@/components/product_manage_form";
 
 interface ProductProps {
@@ -15,11 +16,7 @@ export default function Product({ params }: ProductProps) {
     const { data: product, isLoading, error } = useGetProduct(productID);
 
     if (isLoading) {
-        return <div>Loading...</div>;
-    }
-
-    if (error) {
-        return <div>Error loading product: {error.message}</div>;
+        return <LoadingAnimation/>
     }
 
     if (!product) {
