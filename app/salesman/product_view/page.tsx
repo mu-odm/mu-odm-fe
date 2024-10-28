@@ -1,49 +1,31 @@
 "use client";
 
-import { useState, useEffect } from 'react';
 import Card from '@/components/product_card';
 import Create_Card from '@/components/create_card';
-import fetchProduct, { ApiProduct } from "@/api/user/useProduct";
-
+import { Product, useGetProducts } from "@/api/user/useProduct";
 
 export default function Home() {
-  const [products, setProducts] = useState<ApiProduct[]>([]); // State to store products
-  const [isLoading, setIsLoading] = useState(true); // Loading state
-  const [error, setError] = useState<string | null>(null); // Error state
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetchProduct(); // Call your API function
-        console.log("Fetched Products:", response);
-        setProducts(response); // Set products state
-      } catch (err) {
-        setError("Error loading products"); // Handle errors
-        console.error(err);
-      } finally {
-        setIsLoading(false); // Set loading to false
-      }
-    };
-
-    fetchData();
-  }, []);
+  // Use the useGetProducts hook for data fetching
+  const { data: products, isLoading, error } = useGetProducts();
 
   return (
     <div className="flex-1 bg-white">
       <div className="p-8">
         <div className="flex">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {products.map((product: ApiProduct, index: number) => (
-              <div key={index} className="flex flex-col items-center">
+            {/* Map through the products data if available */}
+            {products?.map((product: Product) => (
+              <div key={product.id} className="flex flex-col items-center">
                 <Card
-                  id= {product.id}
+                  id={product.id}
                   title={product.name}
                   price={product.price}
                   status={product.status}
-                  amount={product.amount}
+                  amount={product.remaining}
                 />
               </div>
             ))}
+            {/* Add New Product Card */}
             <div className="flex flex-col items-center" style={{ cursor: 'pointer' }}>
               <Create_Card
                 title="Add New Product"
@@ -57,8 +39,9 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Loading and Error states */}
       {isLoading && <p>Loading...</p>}
-      {error && <p className="text-red-500">{error}</p>}
+      {error && <p className="text-red-500">Error loading products</p>}
     </div>
   );
 }

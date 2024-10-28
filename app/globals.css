@@ -1,19 +1,65 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 @layer base {
   :root {
-    --radius: 0.5rem
+    --radius: 0.5rem;
   }
 }
 
 /* Custom styles for your application */
 .card {
-  max-width: 100%; /* Prevent the card from exceeding the width of its container */
-  height: auto; /* Allow the height to adjust based on content */
+  max-width: 100%;
+  height: auto;
 }
 
 .grid {
-  overflow: hidden; /* Prevent overflow issues */
+  overflow: hidden;
 }
 
+/* Toggle Switch Styles */
+.switch-container {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.switch-input {
+  display: none;
+}
+
+.switch-label {
+  position: relative;
+  width: 50px;
+  height: 25px;
+  background-color: #ccc;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.switch-label .switch-button {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 21px;
+  height: 21px;
+  background-color: white;
+  border-radius: 50%;
+  transition: left 0.3s;
+}
+
+.switch-input:checked + .switch-label {
+  background-color: #4caf50;
+}
+
+.switch-input:checked + .switch-label .switch-button {
+  left: 25px;
+}
+
+.overflow-scroll-cell {
+  max-width: 150px; /* Adjust width as needed */
+  overflow-x: auto;
+  white-space: nowrap;
+}

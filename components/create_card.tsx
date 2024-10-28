@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { handleAddProduct } from "@/api/user/useProduct"; // Import handleAddProduct from your API file
+import React, { useState } from "react";
+import { useAddProduct } from "@/api/user/useProduct";
+import "@/app/globals.css"; // Assuming you have this CSS for the switch styling
 
 type CardProps = {
   title: string;
@@ -18,12 +19,12 @@ const Modal = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (name: string, price: number, amount: number, status: string) => void;
+  onConfirm: (name: string, price: number, remaining: number, status: string) => void;
 }) => {
   const [productName, setProductName] = useState("");
-  const [amount, setAmount] = useState(0);
+  const [remaining, setRemaining] = useState(0);
   const [price, setPrice] = useState(0);
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState(true);
 
   if (!isOpen) return null;
 
@@ -49,23 +50,28 @@ const Modal = ({
             placeholder="Enter Price"
           />
 
-          <label className="block font-bold mb-1">Amount:</label>
+          <label className="block font-bold mb-1">Remaining:</label>
           <input
             type="number"
-            value={amount}
-            onChange={(e) => setAmount(Number(e.target.value))}
+            value={remaining}
+            onChange={(e) => setRemaining(Number(e.target.value))}
             className="w-full px-2 py-1 border border-gray-300 rounded mb-2"
-            placeholder="Enter amount"
+            placeholder="Enter remaining"
           />
 
           <label className="block font-bold mb-1">Status:</label>
-          <input
-            type="text"
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            className="w-full px-2 py-1 border border-gray-300 rounded"
-            placeholder="Enter status"
-          />
+          <div className="switch-container">
+            <input
+              type="checkbox"
+              checked={status}
+              onChange={() => setStatus(!status)}
+              className="switch-input"
+              id="statusSwitch"
+            />
+            <label className="switch-label" htmlFor="statusSwitch">
+              <span className="switch-button"></span>
+            </label>
+          </div>
         </div>
 
         <div className="flex justify-end mt-4">
@@ -73,7 +79,7 @@ const Modal = ({
             Close
           </button>
           <button
-            onClick={() => onConfirm(productName, price, amount, status)}
+            onClick={() => onConfirm(productName, price, remaining, status ? "available" : "unavailable")}
             className="bg-green-500 text-white rounded px-4 py-2"
           >
             Add Product
@@ -86,22 +92,33 @@ const Modal = ({
 
 export default function Create_Card({ title, description, imageUrl, warehouse, amount }: CardProps) {
   const [isModalOpen, setModalOpen] = useState(false);
+  const { mutate: addProduct } = useAddProduct();
 
-  const handleAddProductWrapper = async (name: string, price: number, amount: number, status: string) => {
-    try {
-      await handleAddProduct(name, price, amount, status);
-      alert("Product added successfully!");
-    } catch (error) {
-      console.error("Failed to add product:", error);
-      alert("Failed to add product.");
+  const handleAddProductWrapper = (name: string, price: number, remaining: number, status: string) => {
+    if (!name || !price || !remaining || !status) {
+      alert("Please fill out all fields.");
+      return;
     }
+
+    addProduct(
+      { name, price, remaining, status },
+      {
+        onSuccess: (data) => {
+          alert("Product added successfully!");
+          setModalOpen(false);
+        },
+        onError: (error) => {
+          console.error("Failed to add product:", error);
+          alert("Failed to add product. Check console for details.");
+        },
+      }
+    );
   };
 
   return (
     <>
       <button
-        className="flex flex-col w-full max-w-xs h-auto rounded overflow-hidden shadow-lg bg-red-400 cursor-pointer hover:shadow-xl transition-shadow duration-300"
-        style={{ minHeight: "4rem", maxWidth: "12rem" }}
+        className="flex flex-col w-full max-w-xs h-auto rounded overflow-hidden shadow-lg bg-red-400 cursor-pointer hover:shadow-xl transition-shadow duration-300 card"
         onClick={() => setModalOpen(true)}
       >
         <div className="w-full h-9 flex items-center justify-center bg-gray-200">
@@ -112,13 +129,11 @@ export default function Create_Card({ title, description, imageUrl, warehouse, a
         </div>
       </button>
 
-      {/* Modal Component */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
-        onConfirm={(name, price, amount, status) => {
-          handleAddProductWrapper(name, price, amount, status);
-          setModalOpen(false);
+        onConfirm={(name, price, remaining, status) => {
+          handleAddProductWrapper(name, price, remaining, status);
         }}
       />
     </>
