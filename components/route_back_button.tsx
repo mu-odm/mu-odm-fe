@@ -9,6 +9,6 @@ export default function RouteBackButton() {
       }
 
     return (
-        <Button variant="outline" onClick={() => routeBackHandler()}>Back</Button>
+        <Button variant="outline" type="button" onClick={() => routeBackHandler()}>Back</Button>
     )
 }

@@ -31,6 +31,7 @@ export default function ManageProduct() {
 
     useEffect(() => {
         setDisplayedProducts(searchedProducts.length > 0 ? searchedProducts : products || []);
+        refetch();
     }, [searchedProducts, products]);
 
     const clearHandler = () => {

@@ -27,6 +27,7 @@ import { useEffect } from "react";
 import { useGetProductSizeList } from "@/api/user/useProductSize";
 import Link from "next/link";
 import { ConfirmDialog } from "./confirm_dialog";
+import useToastHandler from "@/lib/toastHandler";
 
 export function ProductManageForm({ product }: { product: Product }) {
   const { register, handleSubmit, setValue } = useForm({
@@ -48,11 +49,12 @@ export function ProductManageForm({ product }: { product: Product }) {
   const { data: productSizeList, isLoading, isError, refetch } = useGetProductSizeList(product?.id);
 
   const updateProductMutation = useUpdateProduct();
+  const toaster = useToastHandler();
 
   const saveHandler = async (data: any) => {
     try {
-      console.log("data", data);
       await updateProductMutation.mutateAsync({ id: product?.id, product: data });
+      toaster("success", "Product updated successfully");
     } catch (error) {
       console.error("Error updating product:", error);
     }
