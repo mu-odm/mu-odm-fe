@@ -1,12 +1,12 @@
 'use client';
 
-import { Order, useOrder } from "@/api/user/useOrder";
+import { Order, useGetOrder } from "@/api/user/useOrder";
 import LoadingAnimation from "@/components/loading_animation";
 import useRouteHandler from "@/lib/routeHandler";
 
 export default function AllOrders() {
 
-    const { data: orders, isLoading, error } = useOrder();
+    const { data: orders, isLoading, error } = useGetOrder();
     const navigateToRoute = useRouteHandler();
     const uniqueRegions = orders ? Array.from(new Set(orders.map((order: Order) => order.region))) : [];
 

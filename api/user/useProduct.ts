@@ -1,7 +1,7 @@
 'use client';
 
 import axios from "@/lib/axiosInstance";
-import { useMutation, UseMutationResult, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, UseMutationResult, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
 import { getSession } from "next-auth/react";
 
 export interface Product {
@@ -44,6 +44,18 @@ const getProduct = async (id: string) => {
   return data;
 };
 
+const getProductByName = async (name: string) => {
+  const session = await getSession();
+  const { data } = await axios.get<Product[]>(`/products/name`, {
+    params: { name },
+    headers: {
+      Authorization: `Bearer ${session?.accessToken}`,
+    },
+  });
+
+  return data;
+}
+
 // Update an existing product
 const updateProduct = async (productID: string, product: Product) => {
   const session = await getSession();
@@ -64,6 +76,15 @@ const updateProduct = async (productID: string, product: Product) => {
   );
 
   return data;
+};
+
+export const useGetProductByName = (name: string): UseQueryResult<Product[]> => {
+  return useQuery({
+    queryKey: ["product", name],
+    queryFn: () => getProductByName(name),
+    staleTime: 1000 * 60 * 5,
+    enabled: !!name, 
+  });
 };
 
 // React Query mutation hook for updating products

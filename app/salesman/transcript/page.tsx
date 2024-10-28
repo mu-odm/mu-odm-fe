@@ -3,13 +3,13 @@
 "use client";
 import React, { useState } from 'react';
 import "@/app/globals.css";
-import { useOrder, Order } from '@/api/user/useOrder';
+import { useGetOrder, Order } from '@/api/user/useOrder';
 import { usePurchase, Purchase } from '@/api/user/usePurchase';
 import { usePurchaseProduct, PurchaseProduct } from '@/api/user/usePurchaseProduct';
 import { useGetProducts, Product } from '@/api/user/useProduct';
 
 export default function StockView() {
-  const { data: orders, isLoading: isLoadingOrders, error: ordersError } = useOrder();
+  const { data: orders, isLoading: isLoadingOrders, error: ordersError } = useGetOrder();
   const { data: purchases, isLoading: isLoadingPurchases, error: purchasesError } = usePurchase();
   const { data: purchaseProducts, isLoading: isLoadingPurchaseProducts, error: purchaseProductsError } = usePurchaseProduct();
   const { data: products, isLoading: isLoadingProducts, error: productsError } = useGetProducts();

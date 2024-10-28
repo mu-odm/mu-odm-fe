@@ -1,8 +1,9 @@
 'use client';
 
+import { Product } from "@/api/user/useProduct";
 import useRouteHandler from "@/lib/routeHandler";
 
-export default function Card({ product }: any) {
+export default function Card({ product }: { product: Product }) {
 
     const navigateToRoute = useRouteHandler()
 

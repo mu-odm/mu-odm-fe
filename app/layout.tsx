@@ -4,6 +4,7 @@ import "./globals.css";
 
 import NextAuthProvider from "@/provider/NextAuthProvider";
 import QueryClientProvider from "@/provider/QueryClientProvider";
+import MidnightLogger from "@/lib/midnight_logger";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,6 +23,7 @@ export default function RootLayout({
       <body className={`${inter.className}`}>
         <NextAuthProvider>
           <QueryClientProvider>
+            <MidnightLogger/>
             {children}
           </QueryClientProvider>
         </NextAuthProvider>

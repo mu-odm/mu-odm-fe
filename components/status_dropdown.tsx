@@ -19,7 +19,7 @@ export function StatusDropdown() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">Status</Button>
+        <Button variant="outline" className="h-full">Status</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
         <DropdownMenuLabel>Select Status</DropdownMenuLabel>
