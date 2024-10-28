@@ -77,7 +77,8 @@ export default function ClientManager() {
           <div className="w-full max-w-4xl">
 
             {/* Add Client Button Component */}
-            <AddClientButton onAddClient={handleAddClient} />
+            <AddClientButton onAddClient={handleAddClient} userRegion={userRegion} />
+
 
             {/* Display current user's region */}
             {userRegion && (
