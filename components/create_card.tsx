@@ -79,7 +79,7 @@ const Modal = ({
             Close
           </button>
           <button
-            onClick={() => onConfirm(productName, price, remaining, status ? "available" : "unavailable")}
+            onClick={() => onConfirm(productName, price, remaining, status ? "Available" : "Unavailable")}
             className="bg-green-500 text-white rounded px-4 py-2"
           >
             Add Product
