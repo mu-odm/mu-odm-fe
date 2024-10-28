@@ -71,8 +71,6 @@ export function ProductManageForm({ card_detail }: any) {
         </form>
       </CardContent>
       <CardFooter className="flex justify-between">
-        <RouteBackButton />
-        <Button>Save</Button>
       </CardFooter>
     </Card>
   );

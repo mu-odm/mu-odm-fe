@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { updateProductById, ApiProduct } from '@/api/user/useProduct'; // Ensure this import is correct
+import { useUpdateProduct, Product } from '@/api/user/useProduct'; // Import your API hook
 import { ProductManageForm } from './product_manage_form sm'; // Import your form
 
 type CardProps = {
@@ -19,6 +19,9 @@ export default function Card({ id, title, price, status, amount }: CardProps) {
   const [editedStatus, setEditedStatus] = useState(status);
   const [editedAmount, setEditedAmount] = useState(amount);
 
+  // Use the useUpdateProduct mutation
+  const updateProductMutation = useUpdateProduct();
+
   const handleCardClick = () => {
     setIsModalVisible(true);
   };
@@ -28,34 +31,39 @@ export default function Card({ id, title, price, status, amount }: CardProps) {
   };
 
   const handleSaveChanges = async () => {
-    const updatedData: Partial<ApiProduct> = {
+    const updatedData: Partial<Product> = {
       name: editedTitle,
       price: editedPrice,
       status: editedStatus,
-      amount: editedAmount,
+      remaining: editedAmount,
     };
 
     console.log("Attempting to update with data:", updatedData);
-    
-    const updatedProduct = await updateProductById(id, updatedData);
 
-    if (updatedProduct) {
-      setEditedTitle(updatedProduct.name);
-      setEditedPrice(updatedProduct.price);
-      setEditedStatus(updatedProduct.status);
-      setEditedAmount(updatedProduct.amount);
-      alert("Product updated successfully!");
-    } else {
-      alert("Failed to update product. Please try again.");
-    }
-
-    setIsModalVisible(false); 
+    // Use mutation instead of direct API call
+    updateProductMutation.mutate(
+      { id, product: updatedData as Product },
+      {
+        onSuccess: (updatedProduct) => {
+          setEditedTitle(updatedProduct.name);
+          setEditedPrice(updatedProduct.price);
+          setEditedStatus(updatedProduct.status);
+          setEditedAmount(updatedProduct.remaining);
+          alert("Product updated successfully!");
+          setIsModalVisible(false);
+        },
+        onError: (error) => {
+          console.error("Error updating product:", error);
+          alert("Failed to update product. Please try again.");
+        },
+      }
+    );
   };
 
   return (
     <>
       {/* Main card UI */}
-      <div 
+      <div
         className="relative flex flex-col w-full max-w-xs h-auto rounded overflow-hidden shadow-lg bg-red-500 cursor-pointer transition-transform duration-300 transform hover:scale-105 hover:bg-red-600"
         onClick={handleCardClick}
       >
@@ -87,15 +95,15 @@ export default function Card({ id, title, price, status, amount }: CardProps) {
             <div className="flex justify-end space-x-4">
               <button
                 onClick={handleCloseModal}
-                className="bg-gray-300 text-black px-4 py-2 rounded"
+                className="flex bg-gray-300 text-black px-4 py-2 rounded"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveChanges}
-                className="bg-blue-500 text-white px-4 py-2 rounded"
+                className="flex bg-blue-500 text-white px-4 py-2 rounded"
               >
-                Save Changes
+                Save
               </button>
             </div>
           </div>
@@ -104,5 +112,3 @@ export default function Card({ id, title, price, status, amount }: CardProps) {
     </>
   );
 }
-
-
