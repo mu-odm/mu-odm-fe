@@ -77,8 +77,8 @@ export function ProductManageForm({ card_detail, onChange }: ProductManageFormPr
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent position="popper">
-                  <SelectItem value="available">Available</SelectItem>
-                  <SelectItem value="unavailable">Unavailable</SelectItem>
+                  <SelectItem value="Available">Available</SelectItem>
+                  <SelectItem value="Unavailable">Unavailable</SelectItem>
                 </SelectContent>
               </Select>
             </div>

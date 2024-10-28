@@ -5,6 +5,7 @@ import PurchaseCollapse from "@/components/purchase_collapse";
 import RouteBackButton from "@/components/route_back_button";
 import type { Purchase } from "@/api/user/useOrder";
 import { usePurchase } from "@/api/user/usePurchase";
+import LoadingAnimation from "@/components/loading_animation";
 
 interface OrderProps {
     params: {
@@ -14,11 +15,13 @@ interface OrderProps {
 
 export default function Purchase({ params }: OrderProps) {
     const { orderID } = params;
-    const { data: orders, isLoading: orderLoading, error: orderError } = useOrder();
     const { data: purchases, isLoading: purchaseLoading, error: purchaseError } = usePurchase();
 
-    const order = orders?.find((order: Order) => order.id === orderID);
     const purchasesInOrder = purchases?.filter((purchase: Purchase) => purchase.orderID === orderID);
+
+    if (purchaseLoading) {
+        return <LoadingAnimation/>
+    }
 
     return (
         <div>

@@ -25,8 +25,8 @@ export function StatusDropdown() {
         <DropdownMenuLabel>Select Status</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
-          <DropdownMenuRadioItem value="available">available</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="unavailable">unavailable</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="Available">Available</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="Unavailable">Unavailable</DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -6,17 +6,19 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
-    <div className="flex h-screen">
+    <div className="grid grid-cols-1 md:grid-cols-2 h-auto">
       {/* Left Side */}
-      <div className="bg-red-500 w-1/2 flex flex-col justify-center items-center text-white p-10">
-        <h1 className="text-5xl font-bold mb-4">Welcome Fellows Employee!</h1>
+      <div className="bg-red-500 flex flex-col justify-center items-center text-white p-10">
+        <h1 className="text-5xl font-bold mb-4 text-center">Welcome Fellows Employee!</h1>
         <p className="text-lg mb-4">Thank you for your hard work.</p>
         <p className="text-lg mb-4">If you're new here, please create your account.</p>
       </div>
 
       {/* Right Side */}
-      <div className="bg-white w-1/2 flex flex-col justify-center items-center p-10">
-        {children}
+      <div className="bg-white w-full flex flex-col justify-center items-center p-10">
+        <div className=''>
+          {children}
+        </div>
       </div>
     </div>
   );

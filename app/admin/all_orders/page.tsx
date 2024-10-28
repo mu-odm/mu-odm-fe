@@ -1,14 +1,18 @@
 'use client';
 
 import { Order, useOrder } from "@/api/user/useOrder";
+import LoadingAnimation from "@/components/loading_animation";
 import useRouteHandler from "@/lib/routeHandler";
 
 export default function AllOrders() {
 
     const { data: orders, isLoading, error } = useOrder();
     const navigateToRoute = useRouteHandler();
-
     const uniqueRegions = orders ? Array.from(new Set(orders.map((order: Order) => order.region))) : [];
+
+    if (isLoading) return (
+        <LoadingAnimation/>
+    )
 
     return (
         <div className="flex flex-col h-[40rem] justify-between">  
@@ -36,8 +40,9 @@ export default function AllOrders() {
                 </div>
             </div>
             <div>
-                <div>Orders in active: num</div>
-                <div>All shops in active: num</div>
+                <div>Orders in active: {
+                    orders?.filter((order: Order) => order.status === "available").length
+                }</div>
             </div>
         </div>
     )

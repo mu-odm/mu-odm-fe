@@ -105,8 +105,8 @@ export function ProductManageForm({ product }: { product: Product }) {
                   <SelectValue placeholder={product?.status} />
                 </SelectTrigger>
                 <SelectContent position="popper">
-                  <SelectItem value="available">available</SelectItem>
-                  <SelectItem value="unavailable">unavailable</SelectItem>
+                  <SelectItem value="Available">Available</SelectItem>
+                  <SelectItem value="Unavailable">Unavailable</SelectItem>
                 </SelectContent>
               </Select>
             </div>

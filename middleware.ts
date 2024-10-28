@@ -31,7 +31,7 @@ export default withAuth({
     callbacks: {
       async authorized({ req, token }) {
         if (!token) {
-          if (req.nextUrl.pathname === "/home/login" || req.nextUrl.pathname === "/home/register") {
+          if (/^\/home\/.*/.test(req.nextUrl.pathname)) {
             return true;
           }
           return false;
