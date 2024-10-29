@@ -54,6 +54,7 @@ export const useGetUser = (email: string): UseQueryResult<User> => {
     queryKey: ["user", email],
     queryFn: () => getUser(email),
     staleTime: 1000 * 60 * 5,
+    enabled: !!email,
   });
 };
 
