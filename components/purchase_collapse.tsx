@@ -10,7 +10,13 @@ import LoadingAnimation from "./loading_animation";
 import { useState, useEffect } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { set } from "react-hook-form";
-import { Product, Purchase, PurchaseApproval, PurchaseProduct } from "@/types/db-schema";
+import { Product, Purchase, PurchaseProduct } from "@/types/db-schema";
+
+enum PurchaseApproval {
+    Pending = "Pending",
+    Approved = "Approved",
+    Rejected = "Rejected",
+  }
 
 interface PurchaseCollapseProps {
     purchase: Purchase;
