@@ -1,27 +1,9 @@
 import axios from "@/lib/axiosInstance";
 import { useMutation, UseMutationResult, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSession } from "next-auth/react";
-import { User } from "@/api/user/useUser";
+import { Order, Status, User } from "@/types/db-schema";
 
-export interface Purchase {
-  id: string;
-  orderID: string;
-  clientID: string;
-  created_at: string;
-}
 
-export enum Status {
-  Available = "Available",
-  Unavailable = "Unavailable",
-}
-
-export interface Order {
-  id: string;
-  purchases: Purchase[];
-  status: Status;
-  region: string;
-  user: User
-}
 
 const getOrders = async () => {
   const session = await getSession();

@@ -1,15 +1,16 @@
 "use client";
 
 import { useGetClients } from "@/api/user/useClient";
-import { useGetOrder, type Purchase } from "@/api/user/useOrder";
-import { Product, useGetProducts, useUpdateProduct } from "@/api/user/useProduct";
-import { PurchaseApproval, usePurchase, useUpdatePurchase } from "@/api/user/usePurchase";
-import { PurchaseProduct, usePurchaseProduct } from "@/api/user/usePurchaseProduct";
+import { useGetOrder } from "@/api/user/useOrder";
+import { useGetProducts, useUpdateProduct } from "@/api/user/useProduct";
+import { usePurchase, useUpdatePurchase } from "@/api/user/usePurchase";
+import { usePurchaseProduct } from "@/api/user/usePurchaseProduct";
 import useRouteHandler from "@/lib/routeHandler";
 import LoadingAnimation from "./loading_animation";
 import { useState, useEffect } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { set } from "react-hook-form";
+import { Product, Purchase, PurchaseApproval, PurchaseProduct } from "@/types/db-schema";
 
 interface PurchaseCollapseProps {
     purchase: Purchase;

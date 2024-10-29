@@ -1,13 +1,14 @@
 'use client';
 
-import { Order, useGetOrder } from "@/api/user/useOrder";
+import { useGetOrder } from "@/api/user/useOrder";
 import PurchaseCollapse from "@/components/purchase_collapse";
 import RouteBackButton from "@/components/route_back_button";
-import { PurchaseApproval, usePurchase } from "@/api/user/usePurchase";
+import { usePurchase } from "@/api/user/usePurchase";
 import LoadingAnimation from "@/components/loading_animation";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
-import type { Purchase } from "@/api/user/usePurchase";
+import { PurchaseApproval, Order } from "@/types/db-schema";
+import type { Purchase } from "@/types/db-schema";
 
 interface OrderProps {
     params: {

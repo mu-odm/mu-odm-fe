@@ -1,11 +1,12 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import "@/app/globals.css";
-import { useGetClients, Client, useUpdateClient } from "@/api/user/useClient";
+import { useGetClients, useUpdateClient } from "@/api/user/useClient";
 import { useGetAllUsers } from "@/api/user/useUser";
 import { useSession } from "next-auth/react";
 import AddClientButton from "@/components/addclient"; // Adjust the import path as necessary
 import { useAddClient } from "@/api/user/useClient"; // Adjust the import path as necessary
+import { Client } from "@/types/db-schema";
 
 export default function ClientManager() {
   const session = useSession();

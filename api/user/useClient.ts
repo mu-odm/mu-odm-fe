@@ -1,16 +1,9 @@
 import axios from "@/lib/axiosInstance";
+import { Client } from "@/types/db-schema";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSession } from "next-auth/react";
 
-export interface Client {
-  id: string;
-  email: string;
-  name: string;
-  contract_year: number;
-  location: string;
-  contact: string;
-  deferStatus: boolean
-}
+
 
 const getClients = async () => {
   const session = await getSession();

@@ -1,12 +1,9 @@
 import axios from "@/lib/axiosInstance";
+import { ProductSize } from "@/types/db-schema";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSession } from "next-auth/react";
 
-export interface ProductSize {
-    id?: string;
-    size: string;
-    additional_price: number;
-}
+
 
 const getProductSizeList = async () => {
   const session = await getSession();
