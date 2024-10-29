@@ -19,7 +19,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ProductDialog } from "./product_size_dialog sm";
-import { Product, useUpdateProduct } from "@/api/user/useProduct";
+import { Product } from "@/types/db-schema";
+import { useUpdateProduct } from "@/api/user/useProduct";
 import { useEffect } from "react";
 import { useGetProductSizeList } from "@/api/user/useProductSize";
 import useToastHandler from "@/lib/toastHandler";

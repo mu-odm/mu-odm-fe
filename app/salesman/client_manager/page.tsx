@@ -10,8 +10,8 @@ import { Client } from "@/types/db-schema";
 
 export default function ClientManager() {
   const session = useSession();
-  const [clientsMoreThan2Years, setClientsMoreThan2Years] = useState<UseClient[]>([]);
-  const [clients2YearsOrLess, setClients2YearsOrLess] = useState<UseClient[]>([]);
+  const [clientsMoreThan2Years, setClientsMoreThan2Years] = useState<Client[]>([]);
+  const [clients2YearsOrLess, setClients2YearsOrLess] = useState<Client[]>([]);
   const { data: initialClients, isLoading: isLoadingClients, error: clientsError } = useGetClients();
   const updateClient = useUpdateClient();
 
@@ -21,7 +21,7 @@ export default function ClientManager() {
 
   useEffect(() => {
     if (user && initialClients) {
-      const userFilteredClients = initialClients.filter(client => client.user.id === user.id);
+      const userFilteredClients = initialClients.filter(client => client.user_id === session.data?.user?.id);
 
       setClientsMoreThan2Years(userFilteredClients.filter(client => currentYear - client.contract_year > 2));
       setClients2YearsOrLess(userFilteredClients.filter(client => currentYear - client.contract_year <= 2));

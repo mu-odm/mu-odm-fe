@@ -3,10 +3,14 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import "@/app/globals.css";
-import { useGetOrder, Order } from '@/api/user/useOrder';
-import { usePurchase, Purchase } from '@/api/user/usePurchase';
-import { usePurchaseProduct, PurchaseProduct } from '@/api/user/usePurchaseProduct';
-import { useGetProducts, Product } from '@/api/user/useProduct';
+import { useGetOrder } from '@/api/user/useOrder';
+import { Order } from '@/types/db-schema';
+import { usePurchase } from '@/api/user/usePurchase';
+import { Purchase } from '@/types/db-schema';
+import { usePurchaseProduct } from '@/api/user/usePurchaseProduct';
+import { PurchaseProduct } from '@/types/db-schema';
+import { useGetProducts } from '@/api/user/useProduct';
+import { Product } from '@/types/db-schema';
 import { useGetAllUsers } from '@/api/user/useUser';
 import { useSession } from 'next-auth/react';
 

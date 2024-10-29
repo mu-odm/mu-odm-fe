@@ -1,14 +1,14 @@
 // components/ClientSelectionModal.tsx
 import React, { useState } from 'react';
-import { useAddClient } from '@/api/user/useClient';
-import { Product } from '@/api/user/useProduct';
+import { Client } from "@/types/db-schema";
+import { Product } from '@/types/db-schema';
 
 interface ClientSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (client: UseClient, amount: number) => void; // Pass client and amount to parent
+  onConfirm: (client: Client, amount: number) => void; // Pass client and amount to parent
   selectedProduct: Product | null; // Selected product prop
-  clients: UseClient[]; // Clients prop
+  clients: Client[]; // Clients prop
 }
 
 const ClientSelectionModal: React.FC<ClientSelectionModalProps> = ({
@@ -22,7 +22,7 @@ const ClientSelectionModal: React.FC<ClientSelectionModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleConfirm = (client: UseClient) => {
+  const handleConfirm = (client: Client) => {
     if (amount <= 0 || amount > (selectedProduct?.remaining || 0)) {
       alert(`Please enter a valid amount (1 to ${selectedProduct?.remaining})`); // Alert if the amount is invalid
       return;

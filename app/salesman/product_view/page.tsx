@@ -2,7 +2,8 @@
 
 import Card from '@/components/product_card';
 import Create_Card from '@/components/create_card';
-import { Product, useGetProducts } from "@/api/user/useProduct";
+import { useGetProducts } from "@/api/user/useProduct";
+import { Product } from '@/types/db-schema';
 import LoadingAnimation from '@/components/loading_animation';
 
 export default function Home() {

@@ -141,5 +141,4 @@ export const useAddProduct = (): UseMutationResult<Product, Error, ProductInput>
   });
 };
 
-export { Product };
 

@@ -11,7 +11,7 @@ const getClients = async () => {
     throw new Error("No session or access token found.");
   }
 
-  const { data } = await axios.get<UseClient[]>("/clients", {
+  const { data } = await axios.get<Client[]>("/clients", {
     headers: {
       Authorization: `Bearer ${session.accessToken}`,
     },
@@ -56,24 +56,6 @@ const addClient = async (client: Client): Promise<Client> => {
   return data; // Ensure backend returns the client with user_id
 };
 
-// Define the updateClient function
-const updateClient = async (email: string, clientUpdate: Partial<Client>): Promise<Client> => {
-  const session = await getSession();
-  if (!session || !session.accessToken) {
-    throw new Error("No session or access token found.");
-  }
-
-  const { data } = await axios.put<Client>(`/clients/email`, clientUpdate, {
-    params: { email },
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "*/*",
-      Authorization: `Bearer ${session.accessToken}`,
-    },
-  });
-
-  return data;
-};
 
 const updateClient = async (client: Client) => {
   const session = await getSession();
@@ -113,7 +95,7 @@ export const useGetClientByEmail = (email: string) => {
 };
 
 export const useGetClients = () => {
-  return useQuery<UseClient[]>({
+  return useQuery<Client[]>({
     queryKey: ["clients"],
     queryFn: getClients,
     staleTime: 1000 * 60 * 5,

@@ -1,11 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useGetClients, UseClient } from "@/api/user/useClient";
+import { useGetClients } from "@/api/user/useClient";
+import { Client } from '@/types/db-schema';
 import { useGetUser } from "@/api/user/useUser";
 import { useSession } from "next-auth/react";
 import LoadingAnimation from '@/components/loading_animation'; // Assuming you have this component for loading state
 import ClientSelectionModal from '@/components/clientselect'; 
-import { Product, useGetProducts } from "@/api/user/useProduct"; 
+import { useGetProducts } from "@/api/user/useProduct"; 
+import { Product } from '@/types/db-schema';
 import Modal from '@/components/modal'; 
 import { FaShoppingCart } from 'react-icons/fa';
 
@@ -15,7 +17,7 @@ export default function Home() {
   const { data: clients, isLoading: isLoadingClients } = useGetClients();
   const { data: user, isLoading: isLoadingUser } = useGetUser(session.data?.user?.sub || "");
   
-  const [purchaseList, setPurchaseList] = useState<{ product: Product; client: UseClient; amount: number }[]>([]);
+  const [purchaseList, setPurchaseList] = useState<{ product: Product; client: Client; amount: number }[]>([]);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isClientModalOpen, setIsClientModalOpen] = useState(false);
@@ -24,14 +26,14 @@ export default function Home() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // For error handling
 
   // Filter clients based on the user ID
-  const filteredClients = user && clients ? clients.filter(client => client.user.id === user.id) : [];
+  const filteredClients = user && clients ? clients.filter(client => client.user_id === session.data?.user?.id) : [];
 
   const handleAddToPurchase = (product: Product) => {
     setSelectedProduct(product);
     setIsClientModalOpen(true);
   };
 
-  const handleConfirmClient = (client: UseClient, amount: number) => {
+  const handleConfirmClient = (client: Client, amount: number) => {
     if (selectedProduct && amount > 0 && amount <= selectedProduct.remaining) {
       setPurchaseList((prev) => [...prev, { product: selectedProduct, client, amount }]);
       setSelectedProduct(null);

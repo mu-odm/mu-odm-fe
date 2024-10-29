@@ -18,10 +18,10 @@ interface AddClientButtonProps {
 const AddClientButton: React.FC<AddClientButtonProps> = ({
   onAddClient,
   userRegion,
-  userId,
 }) => {
   const [showModal, setShowModal] = useState(false);
   const [newClient, setNewClient] = useState<Client>({
+    user_id:'',
     id: '',
     email: '',
     name: '',
@@ -35,10 +35,10 @@ const AddClientButton: React.FC<AddClientButtonProps> = ({
   useEffect(() => {
     setNewClient((prev) => ({
       ...prev,
-      location: userRegion || "",
-      user_id: userId,
+      location: userRegion || ""
+      
     }));
-  }, [userRegion, userId]);
+  }, [userRegion]);
 
   const handleAddClient = () => {
     if (newClient.name && newClient.email && newClient.location && newClient.contact) {

@@ -1,10 +1,10 @@
 import React from 'react';
-import { Product } from '@/api/user/useProduct'; // Adjust import based on your structure
-import { useAddClient } from '@/api/user/useClient'; // Adjust import based on your structure
+import { Product } from '@/types/db-schema'; // Adjust import based on your structure
+import { Client } from "@/types/db-schema"; // Adjust import based on your structure
 
 interface PurchaseItem {
   product: Product;
-  client: UseClient; // Change to non-nullable type since we expect a valid client
+  client: Client; // Change to non-nullable type since we expect a valid client
   amount: number;
 }
 
@@ -18,7 +18,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, purchaseList }) => {
   if (!isOpen) return null; // Do not render the modal if it is not open
 
   // Group purchases by client
-  const groupedPurchases = purchaseList.reduce<Record<string, { client: UseClient; products: { product: Product; amount: number }[] }>>(
+  const groupedPurchases = purchaseList.reduce<Record<string, { client: Client; products: { product: Product; amount: number }[] }>>(
     (acc, { product, client, amount }) => {
       const clientId = client.id; // Ensure client has an ID
 

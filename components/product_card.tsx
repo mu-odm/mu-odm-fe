@@ -1,5 +1,6 @@
 import { SetStateAction, useState } from 'react';
-import { Product, useUpdateProduct } from '@/api/user/useProduct';
+import {  useUpdateProduct } from '@/api/user/useProduct';
+import { Product } from '@/types/db-schema';
 import { ProductManageForm } from './product_manage_form sm';
 import { useGetProductSizeList } from '@/api/user/useProductSize';
 
