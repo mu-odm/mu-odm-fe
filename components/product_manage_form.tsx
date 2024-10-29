@@ -22,12 +22,13 @@ import {
 } from "@/components/ui/select";
 import { ProductDialog } from "./product_size_dialog";
 import RouteBackButton from "./route_back_button";
-import { Product, useUpdateProduct } from "@/api/user/useProduct";
+import { useUpdateProduct } from "@/api/user/useProduct";
 import { useEffect } from "react";
 import { useGetProductSizeList } from "@/api/user/useProductSize";
 import Link from "next/link";
 import { ConfirmDialog } from "./confirm_dialog";
 import useToastHandler from "@/lib/toastHandler";
+import { Product } from "@/types/db-schema";
 
 export function ProductManageForm({ product }: { product: Product }) {
   const { register, handleSubmit, setValue } = useForm({

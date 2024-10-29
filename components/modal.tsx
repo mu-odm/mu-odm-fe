@@ -1,6 +1,6 @@
 import React from 'react';
 import { Product } from '@/api/user/useProduct'; // Adjust import based on your structure
-import { UseClient } from '@/api/user/useClient'; // Adjust import based on your structure
+import { useAddClient } from '@/api/user/useClient'; // Adjust import based on your structure
 
 interface PurchaseItem {
   product: Product;

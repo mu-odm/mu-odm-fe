@@ -1,30 +1,9 @@
 import axios from "@/lib/axiosInstance";
-import { useMutation, UseMutationResult, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Client } from "@/types/db-schema";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSession } from "next-auth/react";
-import { User } from "@/api/user/useUser";
 
-// Update the Client interface to include user
-export interface Client {
-  user_id: string;
-  id: string;
-  email: string;
-  name: string; // Or username if that's how it's structured
-  contract_year: number;
-  location: string;
-  contact: string;
-  deferstatus: boolean; // Ensure this field matches the backend
-}
 
-export interface UseClient {
-  user: User; // Include the user object directly
-  id: string;
-  email: string;
-  name: string; // Or username if that's how it's structured
-  contract_year: number;
-  location: string;
-  contact: string;
-  deferstatus: boolean;
-}
 
 const getClients = async () => {
   const session = await getSession();
@@ -96,22 +75,36 @@ const updateClient = async (email: string, clientUpdate: Partial<Client>): Promi
   return data;
 };
 
-// Create a useUpdateClient hook
-export const useUpdateClient = () => {
-  const queryClient = useQueryClient();
+const updateClient = async (client: Client) => {
+  const session = await getSession();
+  const { data } = await axios.put<Client>(
+    "/clients/email",
+    {
+      email: client.email,
+      name: client.name,
+      contract_year: client.contract_year,
+      location: client.location,
+      contact: client.contact,
+      deferStatus: client.deferStatus,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${session?.accessToken}`,
+      },
+      params: { email: client.email }, // Add params here
+    }
+  );
 
-  return useMutation<Client, Error, { email: string; clientUpdate: Partial<Client> }>({
-    mutationFn: ({ email, clientUpdate }) => updateClient(email, clientUpdate),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["clients"] });
-    },
-    onError: (error) => {
-      console.error("Error updating client:", error); // Log the error
-    },
-  });
+  return data;
 };
 
-// Other hooks remain the same
+export const useUpdateClient = () => {
+  return useMutation<Client, unknown, Client>({
+    mutationFn: (client) => updateClient(client),
+  });
+}
+
+// Create a useAddClient hook similar to useGetClients and useGetClientByEmail
 export const useGetClientByEmail = (email: string) => {
   return useQuery<Client, unknown, string>({
     queryKey: ["clients", email],

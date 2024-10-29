@@ -1,20 +1,9 @@
 import axios from "@/lib/axiosInstance";
+import { Purchase, PurchaseApproval } from "@/types/db-schema";
 import { useMutation, UseMutationResult, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSession } from "next-auth/react";
 
-export enum PurchaseApproval {
-  Pending = "Pending",
-  Approved = "Approved",
-  Rejected = "Rejected",
-}
 
-export interface Purchase {
-    id: string;
-    orderID: string;
-    clientID: string;
-    created_at: string;
-    status: PurchaseApproval;
-}
 
 const getPurchases = async () => {
   const session = await getSession();

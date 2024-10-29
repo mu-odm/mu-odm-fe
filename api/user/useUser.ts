@@ -1,22 +1,9 @@
 import axios from "@/lib/axiosInstance";
+import { RegisterUser, User } from "@/types/db-schema";
 import { useQuery, UseQueryResult, useMutation, UseMutationResult } from "@tanstack/react-query";
 import { getSession } from "next-auth/react";
 
-export interface User {
-  id: string,
-  username: string;
-  email: string;
-  region: string;
-  role: string;
-}
 
-export interface RegisterUser {
-  id: string,
-  username: string;
-  email: string;
-  password: string;
-  region: string;
-}
 
 const createUser = async (userData: RegisterUser) => {
   const { data } = await axios.post<RegisterUser>("/api/auth/register", userData);

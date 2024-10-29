@@ -14,7 +14,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ProductSize, useCreateProductSize } from "@/api/user/useProductSize";
+import { useCreateProductSize } from "@/api/user/useProductSize";
+import { ProductSize } from "@/types/db-schema";
 
 export function ProductDialog({ refetch }: { refetch: () => void }) {
   const [isOpen, setIsOpen] = useState(false);

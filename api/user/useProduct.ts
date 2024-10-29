@@ -1,23 +1,11 @@
 'use client';
 
 import axios from "@/lib/axiosInstance";
+import { Product, ProductInput } from "@/types/db-schema";
 import { useMutation, UseMutationResult, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
 import { getSession } from "next-auth/react";
 
-export interface Product {
-  id: string;
-  name: string;
-  price: number;
-  status: string;
-  remaining: number;
-}
 
-interface ProductInput {
-  name: string;
-  price: number;
-  remaining: number;
-  status: string;
-}
 
 // Fetch products list
 const getProducts = async () => {
@@ -152,4 +140,6 @@ export const useAddProduct = (): UseMutationResult<Product, Error, ProductInput>
     },
   });
 };
+
+export { Product };
 

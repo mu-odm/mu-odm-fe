@@ -4,10 +4,15 @@ import * as React from "react";
 import { ProductDialog } from "@/components/product_size_dialog";
 import { useGetProductSizeList } from "@/api/user/useProductSize";
 import { ConfirmDialog } from "@/components/confirm_dialog";
+import LoadingAnimation from "@/components/loading_animation";
 
 export default function ManageSize() {
 
     const { data: productSizeList, isLoading, isError, refetch } = useGetProductSizeList();
+
+    if (isLoading) {
+        return <LoadingAnimation/>
+    }
 
     return (
         <div>

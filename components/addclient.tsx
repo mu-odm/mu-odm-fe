@@ -8,19 +8,11 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Client } from "@/types/db-schema";
 
 interface AddClientButtonProps {
-  onAddClient: (newClient: {
-    name: string;
-    email: string;
-    location: string;
-    contact: string;
-    contract_year: number;
-    user_id: string | null;
-    deferstatus: boolean; // Include deferstatus in props
-  }) => void;
-  userRegion: string | null;
-  userId: string | null;
+  onAddClient: (newClient: Client) => void;
+  userRegion: string | null; // Accept userRegion as a prop
 }
 
 const AddClientButton: React.FC<AddClientButtonProps> = ({
@@ -29,13 +21,14 @@ const AddClientButton: React.FC<AddClientButtonProps> = ({
   userId,
 }) => {
   const [showModal, setShowModal] = useState(false);
-  const [newClient, setNewClient] = useState({
-    name: "",
-    email: "",
-    location: userRegion || "",
-    contact: "",
+  const [newClient, setNewClient] = useState<Client>({
+    id: '',
+    email: '',
+    name: '',
     contract_year: 0,
-    user_id: userId,
+    location: '',
+    contact: '',
+    deferStatus: false,
   });
 
   // Update location and userId if userRegion or userId changes
@@ -48,30 +41,9 @@ const AddClientButton: React.FC<AddClientButtonProps> = ({
   }, [userRegion, userId]);
 
   const handleAddClient = () => {
-    // Log newClient data to verify correct values
-    console.log("New client data before API call:", newClient);
-
-    // Calculate deferstatus based on the current year and contract year
-    const currentYear = new Date().getFullYear();
-    const deferstatus = currentYear - newClient.contract_year <= 2;
-
-    // Validate and submit if contract year and other fields are set
-    if (
-      newClient.name &&
-      newClient.email &&
-      newClient.location &&
-      newClient.contact &&
-      newClient.contract_year > 0
-    ) {
-      onAddClient({ ...newClient, deferstatus }); // Call the parent function with newClient data and deferstatus
-      setNewClient({
-        name: "",
-        email: "",
-        location: userRegion || "",
-        contact: "",
-        contract_year: 0,
-        user_id: userId,
-      }); // Reset client data
+    if (newClient.name && newClient.email && newClient.location && newClient.contact) {
+      onAddClient(newClient);
+      setNewClient(newClient);
       setShowModal(false);
     }
   };

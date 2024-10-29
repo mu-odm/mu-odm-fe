@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { SetStateAction, useState } from 'react';
 import { Product, useUpdateProduct } from '@/api/user/useProduct';
 import { ProductManageForm } from './product_manage_form sm';
 import { useGetProductSizeList } from '@/api/user/useProductSize';
@@ -91,7 +91,7 @@ export default function Card({ id, title, price, status, amount }: CardProps) {
                 size: [], // Provide selected sizes if applicable
               }} 
               availableSizes={sizes.map(size => size.size)} // Pass the sizes here
-              onChange={(updatedProductDetail) => {
+              onChange={(updatedProductDetail: { name: SetStateAction<string>; price: SetStateAction<number>; amount: SetStateAction<number>; status: SetStateAction<string>; }) => {
                 setEditedTitle(updatedProductDetail.name);
                 setEditedPrice(updatedProductDetail.price);
                 setEditedAmount(updatedProductDetail.amount);

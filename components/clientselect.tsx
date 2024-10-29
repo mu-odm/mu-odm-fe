@@ -1,6 +1,6 @@
 // components/ClientSelectionModal.tsx
 import React, { useState } from 'react';
-import { UseClient } from '@/api/user/useClient';
+import { useAddClient } from '@/api/user/useClient';
 import { Product } from '@/api/user/useProduct';
 
 interface ClientSelectionModalProps {

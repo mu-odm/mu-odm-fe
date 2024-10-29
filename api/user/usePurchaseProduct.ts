@@ -1,18 +1,9 @@
 import axios from "@/lib/axiosInstance";
+import { PurchaseProduct } from "@/types/db-schema";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSession } from "next-auth/react";
 
-interface PurchaseProductKey {
-    purchase_id: string;
-    product_id: string;
-}
 
-export interface PurchaseProduct {
-    id: PurchaseProductKey;
-    productID: string;
-    clientID: string;
-    amount: number;
-}
 
 const getPurchaseProducts = async () => {
   const session = await getSession();
