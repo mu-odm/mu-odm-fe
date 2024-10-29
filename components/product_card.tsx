@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useUpdateProduct } from '@/api/user/useProduct';
+import { Product, useUpdateProduct } from '@/api/user/useProduct';
 import { ProductManageForm } from './product_manage_form sm';
 import { useGetProductSizeList } from '@/api/user/useProductSize';
 
@@ -19,7 +19,7 @@ export default function Card({ id, title, price, status, amount }: CardProps) {
   const [editedAmount, setEditedAmount] = useState(amount);
   
   const updateProductMutation = useUpdateProduct();
-  const { data: sizes = [], isLoading: loadingSizes, error } = useGetProductSizeList(id);
+  const { data: sizes = [], isLoading: loadingSizes, error } = useGetProductSizeList();
 
   const handleCardClick = () => {
     setIsModalVisible(true);
@@ -30,13 +30,12 @@ export default function Card({ id, title, price, status, amount }: CardProps) {
   };
 
   const handleSaveChanges = async () => {
-    const updatedData = {
+    const updatedData : Product = {
       id, // Include the ID
       name: editedTitle,
       price: editedPrice,
-      amount: editedAmount,
+      remaining: editedAmount,
       status: editedStatus,
-      size: [], // Adjust this according to your selection logic
     };
 
     updateProductMutation.mutate(updatedData, {

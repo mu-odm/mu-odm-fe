@@ -46,7 +46,7 @@ export function ProductManageForm({ product, onClose }: ProductManageFormProps) 
     setValue("remaining", product?.remaining);
   }, [product]);
 
-  const { data: productSizeList, refetch } = useGetProductSizeList(product?.id);
+  const { data: productSizeList, refetch } = useGetProductSizeList();
   const updateProductMutation = useUpdateProduct();
   const toaster = useToastHandler();
 

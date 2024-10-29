@@ -45,6 +45,29 @@ export default function ClientManager() {
     });
   };
 
+  const handleToggleDeferStatus = (client: UseClient) => {
+    const newDeferStatus = !client.deferstatus;
+    const updatedClientData = { ...client, deferstatus: newDeferStatus };
+  
+    // Update UI state first
+    setClientsMoreThan2Years(prevClients => 
+      prevClients.map(c => c.email === client.email ? updatedClientData : c)
+    );
+    setClients2YearsOrLess(prevClients => 
+      prevClients.map(c => c.email === client.email ? updatedClientData : c)
+    );
+  
+    // Send the update request to the backend
+    updateClientMutation.mutate(
+      { email: client.email, clientUpdate: { deferstatus: newDeferStatus } },
+      {
+        onError: (error) => {
+          console.error("Error updating client:", error);
+          // Optionally, revert UI changes here if the update fails
+        }
+      }
+    );
+  };
 
   if (session.status === "loading" || isLoadingClients || isLoadingUser) return <div>Loading...</div>;
   if (session.status === "unauthenticated") return <div>You need to be logged in to manage clients.</div>;
@@ -90,6 +113,7 @@ export default function ClientManager() {
                               type="checkbox"
                               className="switch-input"
                               checked={client.deferstatus ?? false} // Use a default value to prevent undefined
+                              onChange={() => handleToggleDeferStatus(client)}
                             />
                             <span className="switch-label">
                               <span className="switch-button" />

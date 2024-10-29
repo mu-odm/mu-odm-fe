@@ -3,17 +3,13 @@
 import axios from "@/lib/axiosInstance";
 import { useMutation, UseMutationResult, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
 import { getSession } from "next-auth/react";
-import { ProductSize } from "./useProductSize";
 
-// Update the Product interface to include size
 export interface Product {
-  client: any;
   id: string;
   name: string;
   price: number;
   status: string;
   remaining: number;
-  size?: string[]; // Add size property, it's optional for existing products
 }
 
 interface ProductInput {
@@ -21,7 +17,6 @@ interface ProductInput {
   price: number;
   remaining: number;
   status: string;
-  size?: string[]; // Include size in input for new products
 }
 
 // Fetch products list
@@ -71,7 +66,6 @@ const updateProduct = async (productID: string, product: Product) => {
       price: product.price,
       status: product.status,
       remaining: product.remaining,
-      size: product.size, // Send size in update request
     },
     {
       params: { productID },
@@ -131,7 +125,6 @@ const addProduct = async (product: ProductInput): Promise<Product> => {
         price: product.price,
         status: product.status,
         remaining: product.remaining,
-        size: product.size, // Send size when adding a new product
       },
       {
         headers: {
@@ -159,3 +152,4 @@ export const useAddProduct = (): UseMutationResult<Product, Error, ProductInput>
     },
   });
 };
+
