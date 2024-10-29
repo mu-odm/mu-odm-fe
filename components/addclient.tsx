@@ -8,19 +8,23 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Client } from "@/api/user/useClient";
 
 interface AddClientButtonProps {
-  onAddClient: (newClient: { name: string; email: string; location: string; contact: string }) => void;
+  onAddClient: (newClient: Client) => void;
   userRegion: string | null; // Accept userRegion as a prop
 }
 
 const AddClientButton: React.FC<AddClientButtonProps> = ({ onAddClient, userRegion }) => {
   const [showModal, setShowModal] = useState(false);
-  const [newClient, setNewClient] = useState<{ name: string; email: string; location: string; contact: string }>({
-    name: '',
+  const [newClient, setNewClient] = useState<Client>({
+    id: '',
     email: '',
-    location: userRegion || '', // Set initial location to userRegion
+    name: '',
+    contract_year: 0,
+    location: '',
     contact: '',
+    deferStatus: false,
   });
 
   // Update location if userRegion changes
@@ -31,7 +35,7 @@ const AddClientButton: React.FC<AddClientButtonProps> = ({ onAddClient, userRegi
   const handleAddClient = () => {
     if (newClient.name && newClient.email && newClient.location && newClient.contact) {
       onAddClient(newClient);
-      setNewClient({ name: '', email: '', location: userRegion || '', contact: '' }); // Reset location to userRegion
+      setNewClient(newClient);
       setShowModal(false);
     }
   };

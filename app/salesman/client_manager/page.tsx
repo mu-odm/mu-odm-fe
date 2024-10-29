@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import "@/app/globals.css";
-import { useGetClients, Client } from "@/api/user/useClient";
+import { useGetClients, Client, useUpdateClient } from "@/api/user/useClient";
 import { useGetAllUsers } from "@/api/user/useUser";
 import { useSession } from "next-auth/react";
 import AddClientButton from "@/components/addclient"; // Adjust the import path as necessary
@@ -15,6 +15,9 @@ export default function ClientManager() {
   // Fetch all users and clients data
   const { data: allUsers, isLoading: isLoadingAllUsers, error: allUsersError } = useGetAllUsers();
   const { data: initialClients, isLoading: isLoadingClients, error: clientsError } = useGetClients();
+  const updateClient = useUpdateClient();
+
+  const [ defer, setDefer ] = useState(false);
 
   const addClientMutation = useAddClient(); // Use the add client mutation
 
@@ -38,9 +41,8 @@ export default function ClientManager() {
     }
   }, [userRegion, initialClients]);
 
-  const handleAddClient = (newClient: { name: string; email: string; location: string; contact: string }) => {
+  const handleAddClient = (newClient: Client) => {
     const clientData: Client = {
-      id: Date.now().toString(), // Generate a unique ID for the new client
       ...newClient,
       contract_year: 0
     };
@@ -56,6 +58,15 @@ export default function ClientManager() {
       },
     });
   };
+
+  const handleDefer = (client: Client) => {
+    setDefer(!defer);
+    
+    updateClient.mutate({
+      ...client,
+      deferStatus: !defer
+    });
+  }
 
   // Loading and error states
   if (isLoadingClients || isLoadingAllUsers) return <div>Loading...</div>;
@@ -99,12 +110,15 @@ export default function ClientManager() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredClients.map((client) => (
+                  {filteredClients.map((client: Client) => (
                     <tr key={client.id}>
                       <td className="py-2 px-10">{client.name}</td>
                       <td className="py-2 px-18 w-1/6">{client.email}</td>
                       <td className="py-2 px-10 overflow-scroll-cell w-1/6">{client.location}</td>
                       <td className="py-2 px-10">{client.contact}</td>
+                      <input type="checkbox" value="synthwave" defaultChecked={defer}
+                        onClick={() => handleDefer(client)}
+                      className="toggle theme-controller" />
                     </tr>
                   ))}
                 </tbody>
@@ -115,6 +129,7 @@ export default function ClientManager() {
           </div>
         </div>
       </div>
+      
     </div>
   );
 }

@@ -9,6 +9,7 @@ export interface Client {
   contract_year: number;
   location: string;
   contact: string;
+  deferStatus: boolean
 }
 
 const getClients = async () => {
@@ -47,6 +48,35 @@ const addClient = async (client: Client) => {
 
   return data;
 };
+
+const updateClient = async (client: Client) => {
+  const session = await getSession();
+  const { data } = await axios.put<Client>(
+    "/clients/email",
+    {
+      email: client.email,
+      name: client.name,
+      contract_year: client.contract_year,
+      location: client.location,
+      contact: client.contact,
+      deferStatus: client.deferStatus,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${session?.accessToken}`,
+      },
+      params: { email: client.email }, // Add params here
+    }
+  );
+
+  return data;
+};
+
+export const useUpdateClient = () => {
+  return useMutation<Client, unknown, Client>({
+    mutationFn: (client) => updateClient(client),
+  });
+}
 
 // Create a useAddClient hook similar to useGetClients and useGetClientByEmail
 export const useGetClientByEmail = (email: string) => {
