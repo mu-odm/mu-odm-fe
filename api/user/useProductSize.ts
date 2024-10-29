@@ -10,26 +10,23 @@ export interface ProductSize {
 }
 
 const getProductSizeList = async (productID: string) => {
-  const session = await getSession();
-  const { data } = await axios.get<ProductSize[]>("/product_size/product", {
-    params: { productID },
-    headers: {
-      Authorization: `Bearer ${session?.accessToken}`,
-    },
-  });
-
-  return data;
+    const session = await getSession();
+    const { data } = await axios.get<ProductSize[]>("/product_size/product", {
+        params: { productID },
+        headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+        },
+    });
+    return data;
 };
 
 const createProductSize = async (productSize: ProductSize) => {
     const session = await getSession();
-    const { data } = await axios.post<ProductSize>("/product_size", 
-        productSize, {
+    const { data } = await axios.post<ProductSize>("/product_size", productSize, {
         headers: {
-        Authorization: `Bearer ${session?.accessToken}`,
+            Authorization: `Bearer ${session?.accessToken}`,
         },
     });
-    
     return data;
 };
 
@@ -42,13 +39,13 @@ const deleteProductSize = async (id: string) => {
         },
     });
     return data;
-}
+};
 
 export const useDeleteProductSize = () => {
     return useMutation<ProductSize, unknown, string>({
-        mutationFn: ( id: string ) => deleteProductSize(id),
+        mutationFn: (id: string) => deleteProductSize(id),
     });
-}
+};
 
 export const useCreateProductSize = () => {
     return useMutation<ProductSize, unknown, ProductSize>({
@@ -57,10 +54,9 @@ export const useCreateProductSize = () => {
 };
 
 export const useGetProductSizeList = (productID: string) => {
-  return useQuery<ProductSize[]>({
-    queryKey: ["product_size_list", productID],
-    queryFn: () => getProductSizeList(productID),
-    staleTime: 1000 * 60 * 5,
-  });
+    return useQuery<ProductSize[], Error>({
+        queryKey: ["product_size_list", productID],
+        queryFn: () => getProductSizeList(productID),
+        staleTime: 1000 * 60 * 5,
+    });
 };
-

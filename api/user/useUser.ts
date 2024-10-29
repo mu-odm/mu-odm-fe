@@ -3,6 +3,7 @@ import { useQuery, UseQueryResult, useMutation, UseMutationResult } from "@tanst
 import { getSession } from "next-auth/react";
 
 export interface User {
+  id: string,
   username: string;
   email: string;
   region: string;
@@ -10,6 +11,7 @@ export interface User {
 }
 
 export interface RegisterUser {
+  id: string,
   username: string;
   email: string;
   password: string;
@@ -54,6 +56,7 @@ export const useGetUser = (email: string): UseQueryResult<User> => {
     queryKey: ["user", email],
     queryFn: () => getUser(email),
     staleTime: 1000 * 60 * 5,
+    enabled: !!email,
   });
 };
 
