@@ -1,42 +1,42 @@
 import React from 'react';
-import { Product } from '@/types/db-schema'; // Adjust import based on your structure
-import { Client } from "@/types/db-schema"; // Adjust import based on your structure
+import { Product } from '@/types/db-schema';
+import { AddClient } from "@/types/db-schema";
+import { useCreatePurchaseProduct } from '@/api/user/usePurchaseProduct';
 
 interface PurchaseItem {
   product: Product;
-  client: Client; // Change to non-nullable type since we expect a valid client
+  client: AddClient;
   amount: number;
 }
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  purchaseList: PurchaseItem[]; // Define a type for purchase list
+  purchaseList: PurchaseItem[];
 }
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, purchaseList }) => {
-  if (!isOpen) return null; // Do not render the modal if it is not open
+  const { mutateAsync: createPurchaseProduct } = useCreatePurchaseProduct();
 
-  // Group purchases by client
-  const groupedPurchases = purchaseList.reduce<Record<string, { client: Client; products: { product: Product; amount: number }[] }>>(
-    (acc, { product, client, amount }) => {
-      const clientId = client.id; // Ensure client has an ID
+  const handlePurchase = async () => {
+    for (const { client, product, amount } of purchaseList) {
+      await createPurchaseProduct({
+        amount,
+        clientID: client.id,
+        productID: product.id,
+      });
+    }
+    onClose();
+  };
 
-      if (!acc[clientId]) {
-        acc[clientId] = { client, products: [] };
-      }
-      acc[clientId].products.push({ product, amount });
-
-      return acc;
-    },
-    {}
-  );
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
       <div className="bg-white rounded-lg p-5 max-w-md w-full">
         <h2 className="text-lg font-bold mb-4">Purchase List</h2>
-
+        
+        {/* Table to display purchase items */}
         <table className="min-w-full border-collapse">
           <thead>
             <tr>
@@ -46,28 +46,25 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, purchaseList }) => {
             </tr>
           </thead>
           <tbody>
-            {Object.entries(groupedPurchases).length > 0 ? (
-              Object.entries(groupedPurchases).flatMap(([clientId, { client, products }]) =>
-                products.map(({ product, amount }, index) => (
-                  <tr key={`${clientId}-${index}`} className="border-b">
-                    {index === 0 && ( // Only show the client name on the first product row
-                      <td rowSpan={products.length} className="px-4 py-2">
-                        {client.name || 'N/A'}
-                      </td>
-                    )}
-                    <td className="px-4 py-2">{product.name}</td>
-                    <td className="px-4 py-2">{amount}</td>
-                  </tr>
-                ))
-              )
-            ) : (
-              <tr>
-                <td colSpan={3} className="text-center px-4 py-2">No items in the purchase list.</td>
+            {purchaseList.map(({ client, product, amount }, index) => (
+              <tr key={index} className="border-b">
+                <td className="px-4 py-2">{client.name || 'N/A'}</td>
+                <td className="px-4 py-2">{product.name}</td>
+                <td className="px-4 py-2">{amount}</td>
               </tr>
-            )}
+            ))}
           </tbody>
         </table>
 
+        {/* Submit Button */}
+        <button 
+          onClick={handlePurchase} 
+          className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        >
+          Confirm Purchase
+        </button>
+        
+        {/* Close Button */}
         <button 
           onClick={onClose} 
           className="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"

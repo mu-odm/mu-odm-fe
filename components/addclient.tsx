@@ -12,23 +12,24 @@ import { Client } from "@/types/db-schema";
 
 interface AddClientButtonProps {
   onAddClient: (newClient: Client) => void;
-  userRegion: string | null; // Accept userRegion as a prop
+  userRegion: string | null;
+  userId: string | null ;// Accept userRegion as a prop
 }
 
 const AddClientButton: React.FC<AddClientButtonProps> = ({
   onAddClient,
   userRegion,
+  userId,
 }) => {
   const [showModal, setShowModal] = useState(false);
-  const [newClient, setNewClient] = useState<Client>({
-    user_id:'',
-    id: '',
-    email: '',
-    name: '',
+  const [newClient, setNewClient] = useState({
+    name: "",
+    email: "",
+    location: userRegion || "",
+    contact: "",
     contract_year: 0,
-    location: '',
-    contact: '',
     deferStatus: false,
+    user_id: userId,
   });
 
   // Update location and userId if userRegion or userId changes

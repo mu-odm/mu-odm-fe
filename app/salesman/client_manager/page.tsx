@@ -1,23 +1,22 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import "@/app/globals.css";
-import { useGetClients, useUpdateClient } from "@/api/user/useClient";
-import { useGetAllUsers } from "@/api/user/useUser";
+import { useGetClients, useAddClient, useUpdateClient} from "@/api/user/useClient";
+import { Client } from '@/types/db-schema';
+import { useGetUser } from "@/api/user/useUser";
 import { useSession } from "next-auth/react";
-import AddClientButton from "@/components/addclient"; // Adjust the import path as necessary
-import { useAddClient } from "@/api/user/useClient"; // Adjust the import path as necessary
-import { Client } from "@/types/db-schema";
+import AddClientButton from "@/components/addclient";
 
 export default function ClientManager() {
   const session = useSession();
   const [clientsMoreThan2Years, setClientsMoreThan2Years] = useState<Client[]>([]);
   const [clients2YearsOrLess, setClients2YearsOrLess] = useState<Client[]>([]);
   const { data: initialClients, isLoading: isLoadingClients, error: clientsError } = useGetClients();
-  const updateClient = useUpdateClient();
-
-  const [ defer, setDefer ] = useState(false);
-
-  const addClientMutation = useAddClient(); // Use the add client mutation
+  const addClientMutation = useAddClient();
+  const updateClientMutation = useUpdateClient();
+  const currentYear = new Date().getFullYear();
+  const sessionEmail = session.data?.user?.sub;
+  const { data: user, isLoading: isLoadingUser, error: userError } = useGetUser(sessionEmail || "");
 
   useEffect(() => {
     if (user && initialClients) {
@@ -28,11 +27,12 @@ export default function ClientManager() {
     }
   }, [user, initialClients]);
 
-  const handleAddClient = (newClient: Client) => {
+  const handleAddClient = (newClient: { name: string; email: string; contract_year: number; location: string; contact: string }) => {
     const clientData: Client = {
+      id: Date.now().toString(),
       ...newClient,
-      user_id: user?.id ?? "",
-      deferstatus: false, 
+      user_id: session.data?.user?.id ?? "",
+      deferStatus: false
     };
   
     if (!clientData.user_id) {
@@ -46,77 +46,68 @@ export default function ClientManager() {
     });
   };
 
-  const handleDefer = (client: Client) => {
-    setDefer(!defer);
-    
-    updateClient.mutate({
-      ...client,
-      deferStatus: !defer
-    });
-  }
 
-  // Loading and error states
-  if (isLoadingClients || isLoadingAllUsers) return <div>Loading...</div>;
-
-  if (clientsError || allUsersError) {
-    return (
-      <div>
-        <p>Error fetching data:</p>
-        <p>Clients Error: {clientsError?.message}</p>
-        <p>All Users Error: {allUsersError?.message}</p>
-      </div>
-    );
-  }
+  if (session.status === "loading" || isLoadingClients || isLoadingUser) return <div>Loading...</div>;
+  if (session.status === "unauthenticated") return <div>You need to be logged in to manage clients.</div>;
+  if (clientsError || userError) return (
+    <div>
+      <p>Error fetching data:</p>
+      <p>Clients Error: {clientsError?.message}</p>
+      <p>User Error: {userError?.message}</p>
+    </div>
+  );
 
   return (
     <div className="flex-1 bg-white">
       <div className="p-8">
         <div className="flex justify-center">
           <div className="w-full max-w-4xl">
+            <AddClientButton onAddClient={handleAddClient} userId={session.data?.user?.id ?? null} userRegion={user?.region || null} />
 
-            {/* Add Client Button Component */}
-            <AddClientButton onAddClient={handleAddClient} userRegion={userRegion} />
-
-
-            {/* Display current user's region */}
-            {userRegion && (
-              <div className="mb-4 text-center">
-                <p className="text-lg font-semibold">Current User Region: {userRegion}</p>
-              </div>
-            )}
-
-            {/* Display filtered clients */}
-            {filteredClients.length > 0 ? (
-              <table className="w-full text-sm border-t">
-                <thead>
-                  <tr className="text-gray-500">
-                    <th className="text-left py-2 px-10">Name</th>
-                    <th className="text-left py-2 px-8">Email</th>
-                    <th className="text-left py-2 px-10">Location</th>
-                    <th className="text-left py-2 px-10">Contact</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredClients.map((client: Client) => (
-                    <tr key={client.id}>
-                      <td className="py-2 px-10">{client.name}</td>
-                      <td className="py-2 px-18 w-1/6">{client.email}</td>
-                      <td className="py-2 px-10 overflow-scroll-cell w-1/6">{client.location}</td>
-                      <td className="py-2 px-10">{client.contact}</td>
-                      <input type="checkbox" value="synthwave" defaultChecked={defer}
-                        onClick={() => handleDefer(client)}
-                      className="toggle theme-controller" />
+            {[{ title: "Clients with Contract Year Difference > 2", clients: clientsMoreThan2Years },
+              { title: "Clients with Contract Year Difference <= 2", clients: clients2YearsOrLess }].map(({ title, clients }) => (
+              <div key={title} className="mt-8">
+                <h2 className="text-xl font-bold mb-4">{title}</h2>
+                <table className="w-full text-sm border-t mb-8">
+                  <thead>
+                    <tr className="text-gray-500">
+                      <th className="text-left py-2 px-10">Name</th>
+                      <th className="text-left py-2 px-8">Email</th>
+                      <th className="text-left py-2 px-10">Location</th>
+                      <th className="text-left py-2 px-10">Contact</th>
+                      <th className="text-left py-2 px-10">Defer Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <div>No clients available in your location.</div>
-            )}
+                  </thead>
+                  <tbody>
+                    {clients.map(client => (
+                      <tr key={client.id}>
+                        <td className="py-2 px-10">{client.name}</td>
+                        <td className="py-2 px-8">{client.email}</td>
+                        <td className="py-2 px-10">{client.location}</td>
+                        <td className="py-2 px-10">{client.contact}</td>
+                        <td className="py-2 px-10">
+                          <label className="switch-container">
+                            <input
+                              type="checkbox"
+                              className="switch-input"
+                              checked={client.deferStatus ?? false} // Use a default value to prevent undefined
+                            />
+                            <span className="switch-label">
+                              <span className="switch-button" />
+                            </span>
+                          </label>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ))}
+
+            {clientsMoreThan2Years.length === 0 && clients2YearsOrLess.length === 0 && <div>No clients available for your account.</div>}
           </div>
         </div>
       </div>
-      
     </div>
   );
 }
