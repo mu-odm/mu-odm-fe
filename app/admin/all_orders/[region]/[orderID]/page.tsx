@@ -7,8 +7,14 @@ import { usePurchase } from "@/api/user/usePurchase";
 import LoadingAnimation from "@/components/loading_animation";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
-import { PurchaseApproval, Order } from "@/types/db-schema";
+import { Order } from "@/types/db-schema";
 import type { Purchase } from "@/types/db-schema";
+
+enum PurchaseApproval {
+    Pending = "Pending",
+    Approved = "Approved",
+    Rejected = "Rejected",
+  }
 
 interface OrderProps {
     params: {
