@@ -1,8 +1,10 @@
-"use client";
+'use client';
 
 import React, { useState } from "react";
 import { useAddProduct } from "@/api/user/useProduct";
-import "@/app/globals.css"; // Assuming you have this CSS for the switch styling
+import { useGetProductSizeList } from "@/api/user/useProductSize";
+import { usePostPPS } from "@/api/user/usePPS";
+import "@/app/globals.css";
 
 type CardProps = {
   title: string;
@@ -16,15 +18,28 @@ const Modal = ({
   isOpen,
   onClose,
   onConfirm,
+  productSizes,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (name: string, price: number, remaining: number, status: string) => void;
+  onConfirm: (name: string, price: number, remaining: number, status: string, sizes: string[]) => void;
+  productSizes: string[];
 }) => {
   const [productName, setProductName] = useState("");
   const [remaining, setRemaining] = useState(0);
   const [price, setPrice] = useState(0);
   const [status, setStatus] = useState(true);
+  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+
+  const handleSizeChange = (size: string) => {
+    setSelectedSizes((prev) => {
+      if (prev.includes(size)) {
+        return prev.filter((s) => s !== size);
+      } else {
+        return [...prev, size];
+      }
+    });
+  };
 
   if (!isOpen) return null;
 
@@ -37,7 +52,7 @@ const Modal = ({
             type="text"
             value={productName}
             onChange={(e) => setProductName(e.target.value)}
-            className="w-full px-2 py-1 border border-gray-300 rounded mb-2"
+            className="w-full bg-white px-2 py-1 border border-gray-300 rounded mb-2"
             placeholder="Enter product name"
           />
 
@@ -46,7 +61,7 @@ const Modal = ({
             type="number"
             value={price}
             onChange={(e) => setPrice(Number(e.target.value))}
-            className="w-full px-2 py-1 border border-gray-300 rounded mb-2"
+            className="w-full px-2 bg-white py-1 border border-gray-300 rounded mb-2"
             placeholder="Enter Price"
           />
 
@@ -55,7 +70,7 @@ const Modal = ({
             type="number"
             value={remaining}
             onChange={(e) => setRemaining(Number(e.target.value))}
-            className="w-full px-2 py-1 border border-gray-300 rounded mb-2"
+            className="w-full px-2 py-1 bg-white border border-gray-300 rounded mb-2"
             placeholder="Enter remaining"
           />
 
@@ -72,6 +87,22 @@ const Modal = ({
               <span className="switch-button"></span>
             </label>
           </div>
+
+          <label className="block font-bold mb-1">Size:</label>
+          <div className="mb-2">
+            {productSizes.map((sizeName, index) => (
+              <div key={index} className="flex items-center">
+                <input
+                  type="checkbox"
+                  id={`size-${index}`}
+                  checked={selectedSizes.includes(sizeName)}
+                  onChange={() => handleSizeChange(sizeName)}
+                  className="mr-2"
+                />
+                <label htmlFor={`size-${index}`} className="cursor-pointer">{sizeName}</label>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="flex justify-end mt-4">
@@ -79,7 +110,7 @@ const Modal = ({
             Close
           </button>
           <button
-            onClick={() => onConfirm(productName, price, remaining, status ? "Available" : "Unavailable")}
+            onClick={() => onConfirm(productName, price, remaining, status ? "Available" : "Unavailable", selectedSizes)}
             className="bg-green-500 text-white rounded px-4 py-2"
           >
             Add Product
@@ -93,19 +124,55 @@ const Modal = ({
 export default function Create_Card({ title, description, imageUrl, warehouse, amount }: CardProps) {
   const [isModalOpen, setModalOpen] = useState(false);
   const { mutate: addProduct } = useAddProduct();
+  const { mutate: postPPS } = usePostPPS();
+  const { data: productSizes } = useGetProductSizeList();
 
-  const handleAddProductWrapper = (name: string, price: number, remaining: number, status: string) => {
-    if (!name || !price || !remaining || !status) {
+  const handleAddProductWrapper = async (name: string, price: number, remaining: number, status: string, sizes: string[]) => {
+    if (!name || !price || !remaining || !status || sizes.length === 0) {
       alert("Please fill out all fields.");
       return;
     }
 
     addProduct(
-      { name, price, remaining, status },
       {
-        onSuccess: (data) => {
-          alert("Product added successfully!");
-          setModalOpen(false);
+        name,
+        price,
+        remaining,
+        status,
+        size: ""
+      },
+      {
+        onSuccess: async (productData) => {
+          if (productData && productData.id) {
+            alert("Product added successfully!");
+
+            // Retrieve the product size IDs for selected sizes
+            const sizeIds = sizes
+              .map(size => {
+                const matchingSize = productSizes?.find(ps => ps.size === size);
+                return matchingSize ? matchingSize.id : null;
+              })
+              .filter(id => id !== null) as string[];
+
+            // Post PPS for each valid product size ID
+            sizeIds.forEach((sizeId) => {
+              console.log("Posting PPS with:", { product_id: productData.id, product_size_id: sizeId });
+              postPPS(
+                { product_id: productData.id, product_size_id: sizeId },
+                {
+                  onSuccess: () => console.log(`PPS entry added for size ID ${sizeId}`),
+                  onError: (error) => {
+                    console.error(`Failed to post PPS for size ID ${sizeId}:`, error);
+                  },
+                }
+              );
+            });
+
+            alert("PPS process initiated.");
+            setModalOpen(false);
+          } else {
+            alert("Product creation failed.");
+          }
         },
         onError: (error) => {
           console.error("Failed to add product:", error);
@@ -132,9 +199,10 @@ export default function Create_Card({ title, description, imageUrl, warehouse, a
       <Modal
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
-        onConfirm={(name, price, remaining, status) => {
-          handleAddProductWrapper(name, price, remaining, status);
+        onConfirm={(name, price, remaining, status, sizes) => {
+          handleAddProductWrapper(name, price, remaining, status, sizes);
         }}
+        productSizes={productSizes ? productSizes.map(size => size.size) : []}
       />
     </>
   );

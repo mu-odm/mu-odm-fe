@@ -37,16 +37,22 @@ export interface Product {
   id: string;
   name: string;
   price: number;
-  status: string;
   remaining: number;
+  status: string;
+  size?: string[]; // Add size property here if applicable
 }
 
-interface ProductInput {
+
+// Assuming your ProductInput type is defined like this
+export type ProductInput = {
   name: string;
   price: number;
   remaining: number;
   status: string;
-}
+  size: string; // This could be an array if you want it to be flexible
+  sizes?: string[]; // Add this line if you want to support multiple sizes
+};
+
 
 export interface ProductSize {
   id?: string;
@@ -98,4 +104,16 @@ export interface CreatePurchaseProductParams {
   amount: number;
   clientID: string;
   productID: string;
+}
+
+interface PPSProductId {
+  product_id: string;
+  product_size_id: string;
+}
+
+
+export interface PPS {
+  id: PPSProductId; 
+  product_id: string; 
+  product_size_id: string; 
 }
