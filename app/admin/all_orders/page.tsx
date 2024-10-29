@@ -1,8 +1,9 @@
 'use client';
 
-import { Order, useGetOrder } from "@/api/user/useOrder";
+import { useGetOrder } from "@/api/user/useOrder";
 import LoadingAnimation from "@/components/loading_animation";
 import useRouteHandler from "@/lib/routeHandler";
+import { Order, PurchaseApproval } from "@/types/db-schema";
 
 export default function AllOrders() {
 

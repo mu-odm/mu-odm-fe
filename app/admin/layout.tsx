@@ -1,6 +1,7 @@
+'use client';
+
 import { MenuBar } from "@/components/menu_bar";
-import Sidebar from "@/components/sidebar";
-import { Suspense } from "react";
+import { signOut } from "next-auth/react";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   
@@ -24,7 +25,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="w-full">
             <div className="border shadow-md flex flex-row items-center justify-between bg-red-500 h-[6rem]">
                 <MenuBar title_name={"Admin"} route_list={route_list} />
-                <div className="btn m-2 mx-4">Logout</div>
+                <div className="btn m-2 mx-4" onClick={() => signOut()}>Logout</div>
             </div>
 
             <div className="flex-col h-fit bg-white p-10 px-[15rem]">
