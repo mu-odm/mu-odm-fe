@@ -13,32 +13,25 @@ import { Client } from "@/types/db-schema";
 interface AddClientButtonProps {
   onAddClient: (newClient: Client) => void;
   userRegion: string | null;
-  userId: string | null ;// Accept userRegion as a prop
+  userId: string | null // Accept userRegion as a prop
 }
 
-const AddClientButton: React.FC<AddClientButtonProps> = ({
-  onAddClient,
-  userRegion,
-  userId,
-}) => {
+const AddClientButton: React.FC<AddClientButtonProps> = ({ onAddClient, userRegion }) => {
   const [showModal, setShowModal] = useState(false);
-  const [newClient, setNewClient] = useState({
-    name: "",
-    email: "",
-    location: userRegion || "",
-    contact: "",
+  const [newClient, setNewClient] = useState<Client>({
+    id: '',
+    user_id: '',
+    email: '',
+    name: '',
     contract_year: 0,
+    location: '',
+    contact: '',
     deferStatus: false,
-    user_id: userId,
   });
 
-  // Update location and userId if userRegion or userId changes
+  // Update location if userRegion changes
   useEffect(() => {
-    setNewClient((prev) => ({
-      ...prev,
-      location: userRegion || ""
-      
-    }));
+    setNewClient((prev) => ({ ...prev, location: userRegion || '' }));
   }, [userRegion]);
 
   const handleAddClient = () => {
@@ -53,8 +46,7 @@ const AddClientButton: React.FC<AddClientButtonProps> = ({
     <div className="mb-4">
       <button
         className="bg-red-500 text-white py-2 px-4 rounded w-full transition duration-200 ease-in-out hover:bg-gray-100 hover:text-gray-700"
-        onClick={() => setShowModal(true)}
-      >
+        onClick={() => setShowModal(true)}>
         + Add Client
       </button>
 
@@ -63,9 +55,7 @@ const AddClientButton: React.FC<AddClientButtonProps> = ({
           <Card className="bg-white p-6 rounded shadow-md">
             <CardHeader>
               <CardTitle>Add New Client</CardTitle>
-              <CardDescription>
-                Fill in the details to add a new client.
-              </CardDescription>
+              <CardDescription>Fill in the details to add a new client.</CardDescription>
             </CardHeader>
             <CardContent>
               <form>
@@ -76,9 +66,7 @@ const AddClientButton: React.FC<AddClientButtonProps> = ({
                       id="client_name"
                       placeholder="Client Name"
                       value={newClient.name}
-                      onChange={(e) =>
-                        setNewClient({ ...newClient, name: e.target.value })
-                      }
+                      onChange={(e) => setNewClient({ ...newClient, name: e.target.value })}
                     />
                   </div>
                   <div className="flex flex-col space-y-1.5">
@@ -88,9 +76,7 @@ const AddClientButton: React.FC<AddClientButtonProps> = ({
                       type="email"
                       placeholder="Client Email"
                       value={newClient.email}
-                      onChange={(e) =>
-                        setNewClient({ ...newClient, email: e.target.value })
-                      }
+                      onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
                     />
                   </div>
                   <div className="flex flex-col space-y-1.5">
@@ -99,9 +85,7 @@ const AddClientButton: React.FC<AddClientButtonProps> = ({
                       id="client_location"
                       placeholder="Client Location"
                       value={newClient.location}
-                      onChange={(e) =>
-                        setNewClient({ ...newClient, location: e.target.value })
-                      }
+                      onChange={(e) => setNewClient({ ...newClient, location: e.target.value })}
                     />
                   </div>
                   <div className="flex flex-col space-y-1.5">
@@ -110,40 +94,17 @@ const AddClientButton: React.FC<AddClientButtonProps> = ({
                       id="client_contact"
                       placeholder="Client Contact"
                       value={newClient.contact}
-                      onChange={(e) =>
-                        setNewClient({ ...newClient, contact: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="flex flex-col space-y-1.5">
-                    <Label htmlFor="client_contract_year">Contract Year</Label>
-                    <Input
-                      id="client_contract_year"
-                      type="number"
-                      placeholder="Contract Year"
-                      value={newClient.contract_year.toString()}
-                      onChange={(e) =>
-                        setNewClient({
-                          ...newClient,
-                          contract_year: parseInt(e.target.value), // Ensure a valid year
-                        })
-                      }
+                      onChange={(e) => setNewClient({ ...newClient, contact: e.target.value })}
                     />
                   </div>
                 </div>
               </form>
             </CardContent>
             <div className="flex justify-between p-4">
-              <button
-                onClick={handleAddClient}
-                className="bg-blue-500 text-white py-2 px-4 rounded"
-              >
+              <button onClick={handleAddClient} className="bg-blue-500 text-white py-2 px-4 rounded">
                 Add
               </button>
-              <button
-                onClick={() => setShowModal(false)}
-                className="bg-gray-300 py-2 px-4 rounded"
-              >
+              <button onClick={() => setShowModal(false)} className="bg-gray-300 py-2 px-4 rounded">
                 Cancel
               </button>
             </div>
