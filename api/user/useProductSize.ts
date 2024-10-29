@@ -6,25 +6,24 @@ export interface ProductSize {
     id?: string;
     size: string;
     additional_price: number;
-    product_id: string;
 }
 
-const getProductSizeList = async (productID: string) => {
-    const session = await getSession();
-    const { data } = await axios.get<ProductSize[]>("/product_size/product", {
-        params: { productID },
-        headers: {
-            Authorization: `Bearer ${session?.accessToken}`,
-        },
-    });
-    return data;
+const getProductSizeList = async () => {
+  const session = await getSession();
+  const { data } = await axios.get<ProductSize[]>("/product_size", {
+    headers: {
+      Authorization: `Bearer ${session?.accessToken}`,
+    },
+  });
+
+  return data;
 };
 
 const createProductSize = async (productSize: ProductSize) => {
     const session = await getSession();
     const { data } = await axios.post<ProductSize>("/product_size", productSize, {
         headers: {
-            Authorization: `Bearer ${session?.accessToken}`,
+          Authorization: `Bearer ${session?.accessToken}`,
         },
     });
     return data;
@@ -53,10 +52,10 @@ export const useCreateProductSize = () => {
     });
 };
 
-export const useGetProductSizeList = (productID: string) => {
-    return useQuery<ProductSize[], Error>({
-        queryKey: ["product_size_list", productID],
-        queryFn: () => getProductSizeList(productID),
-        staleTime: 1000 * 60 * 5,
-    });
+export const useGetProductSizeList = () => {
+  return useQuery<ProductSize[]>({
+    queryKey: ["product_size_list"],
+    queryFn: getProductSizeList,
+    staleTime: 1000 * 60 * 5,
+  });
 };

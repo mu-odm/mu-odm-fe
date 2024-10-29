@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ProductSize, useCreateProductSize } from "@/api/user/useProductSize";
 
-export function ProductDialog({ product_id, refetch }: { product_id: string, refetch: () => void }) {
+export function ProductDialog({ refetch }: { refetch: () => void }) {
   const [isOpen, setIsOpen] = useState(false);
   const { register, handleSubmit, formState: { errors } } = useForm();
   const createProductSize = useCreateProductSize();
@@ -25,7 +25,6 @@ export function ProductDialog({ product_id, refetch }: { product_id: string, ref
     const productSize: ProductSize = {
       size: data.name,
       additional_price: data.additional_price,
-      product_id: product_id
     };
 
     try {
