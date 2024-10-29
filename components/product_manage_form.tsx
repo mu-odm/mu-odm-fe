@@ -46,7 +46,6 @@ export function ProductManageForm({ product }: { product: Product }) {
     setValue("remaining", product?.remaining);
   }, [product]);
 
-  const { data: productSizeList, isLoading, isError, refetch } = useGetProductSizeList(product?.id);
 
   const updateProductMutation = useUpdateProduct();
   const toaster = useToastHandler();
@@ -112,30 +111,7 @@ export function ProductManageForm({ product }: { product: Product }) {
               </Select>
             </div>
           </div>
-          <div className="mt-10">
-            <div className="flex flex-row justify-between items-center">
-              <div className="my-2 font-bold">Sizes</div>
-            </div>
-            <div className="flex flex-col gap-3">
-              {
-                productSizeList?.map((size) => (
-                  <div className="flex flex-row w-full gap-2">
-                    <div key={size.id} className="flex w-full items-center justify-between border p-2 rounded-md px-3">
-                      <div>{size.size}</div>
-                      <div>+{size.additional_price}</div>
-                    </div>
-                    {
-                      size.id &&
-                      <ConfirmDialog product_size_id={size.id} btn_name={"del"} refetch={refetch} />
-                    }
-                  </div>
-                ))
-              }
-            </div>
-            <div className="w-full">
-              <ProductDialog product_id={product?.id} refetch={refetch} />
-            </div>
-          </div>
+          
           <CardFooter className="flex justify-between mt-4">
             <RouteBackButton />
             <Button type="submit">Save</Button>

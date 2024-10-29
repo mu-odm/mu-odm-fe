@@ -172,6 +172,7 @@ const PurchaseCollapse: React.FC<PurchaseCollapseProps> = ({ purchase }) => {
                                         <p>Name: {productData?.name}</p>
                                         <p>Price: {productData?.price}</p>
                                         <p>Quantity: {productData?.remaining}</p>
+                                        <p>Status: {productData?.status}</p>
                                     </div>
                                 );
                             })

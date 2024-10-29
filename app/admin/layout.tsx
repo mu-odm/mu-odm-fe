@@ -12,6 +12,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             name: "Manage Product",
             route: "/admin/manage_product"
         },
+        {
+            name: "Manage Size",
+            route: "/admin/manage_size"
+        },
 
     ];
   
