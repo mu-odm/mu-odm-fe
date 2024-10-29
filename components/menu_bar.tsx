@@ -39,9 +39,7 @@ export function MenuBar({ title_name, route_list }: { title_name: string, route_
                       MU-ODM
                     </div>
                     <p className="text-sm leading-tight text-muted-foreground">
-                      Beautifully designed components that you can copy and
-                      paste into your apps. Accessible. Customizable. Open
-                      Source.
+                      Welcome to Admin Manager section. Here you can manage all the orders, products and sizes.
                     </p>
                   </a>
                 </NavigationMenuLink>
