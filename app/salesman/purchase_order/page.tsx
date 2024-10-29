@@ -1,7 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useGetClients } from "@/api/user/useClient";
-import { Client } from "@/types/db-schema";
+import { AddClient } from '@/types/db-schema';
+import { Client } from '@/types/db-schema';
 import { useGetUser } from "@/api/user/useUser";
 import { useSession } from "next-auth/react";
 import LoadingAnimation from "@/components/loading_animation"; // Assuming you have this component for loading state
@@ -15,13 +16,9 @@ export default function Home() {
   const session = useSession();
   const { data: products, isLoading: isLoadingProducts } = useGetProducts();
   const { data: clients, isLoading: isLoadingClients } = useGetClients();
-  const { data: user, isLoading: isLoadingUser } = useGetUser(
-    session.data?.user?.sub || ""
-  );
-
-  const [purchaseList, setPurchaseList] = useState<
-    { product: Product; client: Client; amount: number }[]
-  >([]);
+  const { data: user, isLoading: isLoadingUser } = useGetUser(session.data?.user?.sub || "");
+  
+  const [purchaseList, setPurchaseList] = useState<{ product: Product; client: AddClient; amount: number }[]>([]);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isClientModalOpen, setIsClientModalOpen] = useState(false);
@@ -43,8 +40,12 @@ export default function Home() {
   const handleConfirmClient = (client: Client, amount: number) => {
     if (selectedProduct && amount > 0 && amount <= selectedProduct.remaining) {
       setPurchaseList((prev) => [
-        ...prev,
-        { product: selectedProduct, client, amount },
+        ...prev, 
+        { 
+          product: selectedProduct, 
+          client: { ...client, id: client.id || "default-id" }, // Assign a default if `id` is undefined
+          amount 
+        }
       ]);
       setSelectedProduct(null);
       setIsClientModalOpen(false);
@@ -53,7 +54,8 @@ export default function Home() {
       alert(`Please enter a valid amount (1 to ${selectedProduct?.remaining})`);
     }
   };
-
+  
+  
   const handleViewPurchaseList = () => {
     setIsPurchaseListModalOpen(true);
   };

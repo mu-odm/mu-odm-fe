@@ -1,5 +1,16 @@
 export interface Client {
   user_id: any;
+  id?: string;
+  email: string;
+  name: string;
+  contract_year: number;
+  location: string;
+  contact: string;
+  deferStatus: boolean;
+}
+
+export interface AddClient {
+  user_id: any;
   id: string;
   email: string;
   name: string;
@@ -81,4 +92,10 @@ export interface RegisterUser {
   email: string;
   password: string;
   region: string;
+}
+
+export interface CreatePurchaseProductParams {
+  amount: number;
+  clientID: string;
+  productID: string;
 }
