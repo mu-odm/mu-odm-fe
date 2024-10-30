@@ -5,7 +5,7 @@ import LoadingAnimation from "@/components/loading_animation";
 import useRouteHandler from "@/lib/routeHandler";
 import { Order, PurchaseApproval } from "@/types/db-schema";
 
-export default function AllOrders() {
+export default function AllOrdersPage() {
 
     const { data: orders, isLoading, error } = useGetOrder();
     const navigateToRoute = useRouteHandler();
@@ -14,6 +14,7 @@ export default function AllOrders() {
     if (isLoading) return (
         <LoadingAnimation/>
     )
+
 
     return (
         <div className="flex flex-col h-[40rem] justify-between">  
@@ -38,7 +39,7 @@ export default function AllOrders() {
                                 <div className="flex flex-row gap-2 font-bold">
                                     <div>Available Orders:</div>
                                     <div className="text-green-500">{
-                                        orders?.filter((order: Order) => order.status === "Available" && order.region == 'North').length
+                                        orders?.filter((order: Order) => order.status === "Available" && order.region === region).length
                                     }</div>
                                 </div>
                             </div>

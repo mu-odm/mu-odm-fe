@@ -52,8 +52,6 @@ const updateProduct = async (productID: string, product: Product) => {
     {
       name: product.name,
       price: product.price,
-      status: product.status,
-      remaining: product.remaining,
     },
     {
       params: { productID },
@@ -75,7 +73,6 @@ export const useGetProductByName = (name: string): UseQueryResult<Product[]> => 
   });
 };
 
-// React Query mutation hook for updating products
 export const useUpdateProduct = (): UseMutationResult<Product, unknown, { id: string; product: Product }> => {
   return useMutation({
     mutationFn: ({ id, product }) => updateProduct(id, product),

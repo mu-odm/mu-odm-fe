@@ -37,8 +37,6 @@ export interface Product {
   id: string;
   name: string;
   price: number;
-  remaining: number;
-  status: string;
   size?: string[]; // Add size property here if applicable
 }
 
@@ -74,7 +72,10 @@ export interface Purchase {
 
 interface PurchaseProductKey {
   purchase_id: string;
-  pps_id: PPS;
+  pps_id: {
+    product_id: string;
+  product_size_id: string;
+  };
 }
 
 export interface PurchaseProduct {
@@ -104,6 +105,10 @@ export interface CreatePurchaseProductParams {
 }
 
 export interface PPS {
-  product_id: string;
-  product_size_id: string;
+  id: {
+    product_id: string;
+    product_size_id: string;
+  }
+  remaining: number;
+  status?: Status
 }

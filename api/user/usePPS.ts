@@ -1,6 +1,6 @@
 import axios from "@/lib/axiosInstance";
 import { PPS } from "@/types/db-schema";
-import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
+import { useMutation, UseMutationResult, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
 import { getSession } from "next-auth/react";
 
 
@@ -26,10 +26,33 @@ const getAllPPSByProductID = async (product_id: string) => {
     
     return data;
 }
+
+const updatePPSByPPSID = async (updatedData: PPS) => {
+    const session = await getSession();
+    const { data } = await axios.put<PPS>(`/pps/product-productSize`,
+      {
+        product_id: updatedData.id.product_id,
+        product_size_id: updatedData.id.product_size_id,
+        remaining: updatedData.remaining,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${session?.accessToken}`,
+        },
+    });
+    
+    return data;
+}
+
+export const useUpdatePPSByPPSID = (): UseMutationResult<PPS, unknown, PPS> => {
+  return useMutation({
+    mutationFn: updatePPSByPPSID,
+  });
+}
     
 export const useGetAllPPSBYProductID = (product_id: string): UseQueryResult<PPS[]> => {
     return useQuery({
-      queryKey: ["product", name],
+      queryKey: ["pps", product_id],
       queryFn: () => getAllPPSByProductID(product_id),
       staleTime: 1000 * 60 * 5,
       enabled: !!product_id, 
@@ -39,7 +62,7 @@ export const useGetAllPPSBYProductID = (product_id: string): UseQueryResult<PPS[
 
 export const useGetAllPPS = () => {
   return useQuery<PPS[]>({
-    queryKey: ["product_size_list"],
+    queryKey: ["pps"],
     queryFn: getAllPPS,
     staleTime: 1000 * 60 * 5,
   });

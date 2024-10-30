@@ -1,11 +1,11 @@
 "use client";
 
 import { useGetOrder } from "@/api/user/useOrder";
-import type { Order } from "@/api/user/useOrder";
 import { usePurchase } from "@/api/user/usePurchase";
 import LoadingAnimation from "@/components/loading_animation";
 import RouteBackButton from "@/components/route_back_button";
 import useRouteHandler from "@/lib/routeHandler";
+import { Order } from "@/types/db-schema";
 
 interface RegionProps {
   params: {
@@ -13,7 +13,7 @@ interface RegionProps {
   };
 }
 
-export default function Order({ params }: RegionProps) {
+export default function OrderPage({ params }: RegionProps) {
   const { region } = params;
   const { data: orders, isLoading: orderLoading, error: orderError } = useGetOrder();
   const { data: purchases, isLoading: purchaseLoading, error: purchaseError } = usePurchase();

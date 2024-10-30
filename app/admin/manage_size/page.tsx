@@ -29,8 +29,8 @@ export default function ManageSize() {
                       <div>+{size.additional_price}</div>
                     </div>
                     {
-                      size.id &&
-                      <ConfirmDialog product_size_id={size.id} btn_name={"del"} refetch={refetch} />
+                      // size.id &&
+                      // <ConfirmDialog product_size_id={size.id} btn_name={"del"} refetch={refetch} />
                     }
                   </div>
                 ))
