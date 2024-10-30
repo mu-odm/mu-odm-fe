@@ -82,18 +82,20 @@ export const useUpdateProduct = (): UseMutationResult<Product, unknown, { id: st
   });
 };
 
-export const useGetProducts = () => {
-  return useQuery({
-    queryKey: ["products"],
-    queryFn: getProducts,
-    staleTime: 1000 * 60 * 5,
-  });
-};
+
 
 export const useGetProduct = (id: string) => {
   return useQuery({
     queryKey: ["product", id],
     queryFn: () => getProduct(id),
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useGetProducts = () => {
+  return useQuery({
+    queryKey: ["products"],
+    queryFn: getProducts,
     staleTime: 1000 * 60 * 5,
   });
 };

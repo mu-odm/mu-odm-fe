@@ -9,8 +9,9 @@ import useRouteHandler from "@/lib/routeHandler";
 import LoadingAnimation from "./loading_animation";
 import { useState, useEffect } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { set } from "react-hook-form";
-import { Product, Purchase, PurchaseApproval, PurchaseProduct } from "@/types/db-schema";
+import { PPS, Product, Purchase, PurchaseApproval, PurchaseProduct } from "@/types/db-schema";
+import { useGetAllPPSBYProductID } from "@/api/user/usePPS";
+import { useGetProductSizeList } from "@/api/user/useProductSize";
 
 interface PurchaseCollapseProps {
     purchase: Purchase;
@@ -22,49 +23,56 @@ const PurchaseCollapse: React.FC<PurchaseCollapseProps> = ({ purchase }) => {
     const { data: products, isLoading: productLoading, refetch: productsRefetch } = useGetProducts();
     const { data: purchase_products, isLoading: purchaseProductLoading } = usePurchaseProduct();
     const { data: orders, isLoading: orderLoading } = useGetOrder();
+    const { data: sizes, isLoading: sizeLoading } = useGetProductSizeList();
+
+    const [selectedProductID, setSelectedProductID] = useState<string>("");
+    const { data: ppsByProductID, isLoading: ppsLoading } = useGetAllPPSBYProductID(selectedProductID);
 
     const updatePurchase = useUpdatePurchase();
     const updateProduct = useUpdateProduct();
-
     const navigateToRoute = useRouteHandler();
-    const isLoading = purchaseLoading || clientLoading || productLoading || purchaseProductLoading || orderLoading;
 
+    const isLoading = ppsLoading || purchaseLoading || clientLoading || productLoading || purchaseProductLoading || orderLoading || sizeLoading;
+    
     const [total, setTotal] = useState(0);
     const [status, setStatus] = useState<PurchaseApproval | undefined>();
 
+
     useEffect(() => {
-        if (purchases && products && purchase_products) {
-            const purchaseData = purchases.find((p: Purchase) => p.id === purchase.id);
-            if (purchaseData) {
-                const allProductsInPurchase = purchase_products.filter((pp: any) => pp.id.purchase_id === purchase.id);
-                let increment = 0;
+        if (purchaseLoading || productLoading || purchaseProductLoading) return;
+        if (!purchases || !products || !purchase_products) return;
 
-                allProductsInPurchase.forEach((pp: PurchaseProduct) => {
-                    const productData = products.find((p: any) => p.id === pp.id.product_id);
-                    increment += (productData?.price ?? 0) * pp.amount;
-                });
+        const purchaseData = purchases.find((p: Purchase) => p.id === purchase.id);
+        if (!purchaseData) return;
 
-                setTotal(increment);
-                setStatus(purchaseData.status);
-            }
-        }
-    }, [purchases, products, purchase_products, purchase.id]);
+        const allProductsInPurchase = purchase_products.filter((pp: PurchaseProduct) => pp.id.purchase_id === purchase.id);
+        let totalAmount = 0;
+
+        allProductsInPurchase.forEach((pp: PurchaseProduct) => {
+            const productData = products.find((p: Product) => p.id === pp.productID);
+            totalAmount += (productData?.price ?? 0) * pp.amount;
+        });
+
+        setTotal(totalAmount);
+        setStatus(purchaseData.status);
+    }, [purchase.id, purchases, products, purchase_products, purchaseLoading, productLoading, purchaseProductLoading]);
 
     if (isLoading) {
         return <LoadingAnimation />;
     }
 
-
     const purchaseData = purchases?.find((p: Purchase) => p.id === purchase.id);
-    const clientData = clients?.find((c: any) => c.id === purchaseData?.clientID);
-    const orderData = orders?.find((o: any) => o.id === purchaseData?.orderID);
-    const allProductsInPurchase = purchase_products?.filter((pp: any) => pp.id.purchase_id === purchase.id);
+    const allPurchaseProductsInPurchase = purchase_products?.filter((pp) => pp.id.purchase_id === purchase.id);
+
+    const allProductsInPP = products?.filter((p) => allPurchaseProductsInPurchase?.some((pp) => pp.id.pps_id.product_id === p.id));
+    const allSizesInPP = sizes?.filter((s) => allPurchaseProductsInPurchase?.some((pp) => pp.id.pps_id.product_size_id === s.id));
+
+    const clientData = clients?.find((c) => c.id === purchaseData?.clientID);
+    const orderData = orders?.find((o) => o.id === purchaseData?.orderID);
 
     const saveHandler = async () => {
         try {
-            if (!status || !purchaseData) {
-                return;
-            }
+            if (!status || !purchaseData) return;
 
             const shouldDecrement = 
                 (purchaseData.status === PurchaseApproval.Rejected || purchaseData.status === PurchaseApproval.Pending) &&
@@ -73,33 +81,25 @@ const PurchaseCollapse: React.FC<PurchaseCollapseProps> = ({ purchase }) => {
                 purchaseData.status === PurchaseApproval.Approved &&
                 (status === PurchaseApproval.Rejected || status === PurchaseApproval.Pending);
 
-
             await updatePurchase.mutateAsync({
                 purchaseID: purchase.id,
-                status: status
+                status: status,
             });
 
-            if (products && allProductsInPurchase) {
-
+            if (products && allPurchaseProductsInPurchase) {
                 await Promise.all(products.map(async (product: Product) => {
-                    const purchaseProduct = allProductsInPurchase.find((pp: PurchaseProduct) => pp.id.product_id === product.id);
-
+                    const purchaseProduct = allPurchaseProductsInPurchase.find((pp) => pp.productID === product.id);
                     if (purchaseProduct) {
                         let newRemaining = product.remaining;
-
-                        if (shouldIncrement && !shouldDecrement) {
-                            newRemaining += purchaseProduct.amount;
-                        }
-                        if (shouldDecrement && !shouldIncrement) {
-                            newRemaining -= purchaseProduct.amount;
-                        }
+                        if (shouldIncrement) newRemaining += purchaseProduct.amount;
+                        if (shouldDecrement) newRemaining -= purchaseProduct.amount;
 
                         await updateProduct.mutateAsync({
                             id: product.id,
                             product: {
                                 ...product,
-                                remaining: newRemaining
-                            }
+                                remaining: newRemaining,
+                            },
                         });
                     }
                 }));
@@ -110,15 +110,11 @@ const PurchaseCollapse: React.FC<PurchaseCollapseProps> = ({ purchase }) => {
         } catch (error) {
             console.error(error);
         }
-    }
+    };
 
     const statusColor = () => {
-        if (status === PurchaseApproval.Approved) {
-            return "text-green-500";
-        }
-        if (status === PurchaseApproval.Rejected) {
-            return "text-red-500";
-        }
+        if (status === PurchaseApproval.Approved) return "text-green-500";
+        if (status === PurchaseApproval.Rejected) return "text-red-500";
         return "text-yellow-500";
     };
 
@@ -156,29 +152,55 @@ const PurchaseCollapse: React.FC<PurchaseCollapseProps> = ({ purchase }) => {
                         <p><span className="text-green-500">{total}</span> THB.</p>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
-                        {
-                            allProductsInPurchase?.map((pp: PurchaseProduct) => {
-                                const productData = products?.find((p: any) => p.id === pp.id.product_id);
-
-                                return (
-                                    <div key={pp.id.product_id} className="flex flex-col border rounded-md p-3 hover:bg-gray-600 hover:cursor-pointer" onClick={() => navigateToRoute(
-                                        `/admin/manage_product`,
-                                        pp.id.product_id
-                                    )}>
-                                        <div className="flex flex-row justify-between items-center">
-                                            <div className="text-lg font-bold">Product</div>
-                                            <div className="text-blue-500">(x{pp.amount})</div>
-                                        </div>
-                                        <p>ID: {productData?.id}</p>
-                                        <p>Name: {productData?.name}</p>
-                                        <p>Price: {productData?.price}</p>
-                                        <p>Quantity: {productData?.remaining}</p>
-                                        <p>Status: {productData?.status}</p>
-                                    </div>
-                                );
-                            })
+                        {allPurchaseProductsInPurchase?.map((pp) => {
+                            const productData = allProductsInPP?.find((p) => p.id === pp.productID);
+                            const sizeData = allSizesInPP?.find((s) => s.id === pp.id.pps_id.product_size_id);
+                            const ppsData = ppsByProductID?.find((pps) => pps.product_id === pp.id.pps_id.product_id);
+                            const uniqueKey = pp.id.pps_id.product_id + pp.id.pps_id.product_size_id;
+                            return (
+                                <div key={uniqueKey} className="flex flex-col gap-2">
+                                    <div className="text-lg font-bold">{productData?.id}</div>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <p>Amount: {pp.id.pps_id.product_id}</p>
+                                        <p>Price: {productData?.price} THB.</p>
+                                        <p>Size: {sizeData?.size}</p>
+                                        <p>Additional Price: {sizeData?.additional_price} THB.</p>
+=                                    </div>
+                                </div>
+                            );
+                        })
                         }
                     </div>
+                    {
+
+                            // allPurchaseProductsInPurchase?.map((pp: PurchaseProduct) => {
+                            //     const ppsData = ppsByProductID?.find((pps: PPS) => pps.product_id === pp.id.pps_id.product_id 
+                            //         && pps.product_size_id === pp.id.pps_id.product_size_id);
+                            //     console.log(pp)
+                            //     const productData = products?.find((p: Product) => p.id === ppsData?.product_id);
+                            //     const sizeData = sizes?.find((s: any) => s.id === ppsData?.product_size_id);
+                            //     const uniqueKey = `${pp.id.purchase_id}-${pp.id.pps_id.product_id}-${pp.id.pps_id.product_size_id}`;
+                            //     console.log(ppsData);
+                            //     return (
+                            //         <div key={uniqueKey} className="flex flex-col border rounded-md p-3 hover:bg-gray-600 hover:cursor-pointer" onClick={() => navigateToRoute(
+                            //             `/admin/manage_product`,
+                            //             pp.id.pps_id.product_id
+                            //         )}>
+                            //             <div className="flex flex-row justify-between items-center">
+                            //                 <div className="text-lg font-bold">Product</div>
+                            //                 <div className="text-blue-500">(x{pp.amount})</div>
+                            //             </div>
+                            //             <p>ID: {ppsData?.product_id}</p>
+                            //             <p>Name: {productData?.name}</p>
+                            //             <p>Price: {productData?.price} + {sizeData?.additional_price}</p>
+                            //             <p>Quantity: {productData?.remaining}</p>
+                            //             <p>Status: {productData?.status}</p>
+                            //             <p>Size: {sizeData?.size}</p>
+                            //         </div>
+                            //     );
+                            // })
+                        // }
+                    }
                 </div>
                 <hr className="border-t border-gray-300 w-full my-2" />
                 <div className="flex flex-col gap-2">

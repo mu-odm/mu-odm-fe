@@ -27,7 +27,7 @@ export enum Status {
 
 export interface Order {
   id: string;
-  purchases: Purchase[];
+  purchases: Purchase[]; // >??
   status: Status;
   region: string;
   user: User;
@@ -41,7 +41,7 @@ export interface Product {
   remaining: number;
 }
 
-interface ProductInput {
+export interface ProductInput {
   name: string;
   price: number;
   remaining: number;
@@ -70,13 +70,12 @@ export interface Purchase {
 
 interface PurchaseProductKey {
   purchase_id: string;
-  product_id: string;
+  pps_id: PPS;
 }
 
 export interface PurchaseProduct {
   id: PurchaseProductKey;
   productID: string;
-  clientID: string;
   amount: number;
 }
 
@@ -98,4 +97,9 @@ export interface CreatePurchaseProductParams {
   amount: number;
   clientID: string;
   productID: string;
+}
+
+export interface PPS {
+  product_id: string;
+  product_size_id: string;
 }
