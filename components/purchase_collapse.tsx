@@ -109,6 +109,7 @@ const PurchaseCollapse: React.FC<PurchaseCollapseProps> = ({ purchase }) => {
                                     product_size_id: pp.id.pps_id.product_size_id,
                                 },
                                 remaining: ppsData.remaining - pp.amount,
+                                status: ppsData.status
                             });
                         } else if (shouldIncrement) {
                             await updatePPS.mutateAsync({
@@ -117,6 +118,7 @@ const PurchaseCollapse: React.FC<PurchaseCollapseProps> = ({ purchase }) => {
                                     product_size_id: pp.id.pps_id.product_size_id,
                                 },
                                 remaining: ppsData.remaining + pp.amount,
+                                status: ppsData.status
                             });
                         }
                     }

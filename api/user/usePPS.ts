@@ -1,9 +1,7 @@
 import axios from "@/lib/axiosInstance";
-import { PPS } from "@/types/db-schema";
+import { PPS, Status } from "@/types/db-schema";
 import { useMutation, UseMutationResult, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
 import { getSession } from "next-auth/react";
-
-
 
 const getAllPPS = async () => {
   const session = await getSession();
@@ -34,6 +32,7 @@ const updatePPSByPPSID = async (updatedData: PPS) => {
         product_id: updatedData.id.product_id,
         product_size_id: updatedData.id.product_size_id,
         remaining: updatedData.remaining,
+        status: updatedData.status,
       },
       {
         headers: {

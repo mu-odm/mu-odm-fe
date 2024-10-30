@@ -28,32 +28,48 @@ import { useGetProductSizeList } from "@/api/user/useProductSize";
 import Link from "next/link";
 import { ConfirmDialog } from "./confirm_dialog";
 import useToastHandler from "@/lib/toastHandler";
-import { Product } from "@/types/db-schema";
+import { PPS, Product, ProductSize, Status } from "@/types/db-schema";
+import { useUpdatePPSByPPSID } from "@/api/user/usePPS";
 
-export function ProductManageForm({ product }: { product: Product }) {
+interface PPSFullData extends PPS {
+  product: Product;
+  productSize: ProductSize;
+}
+
+export function ProductManageForm({ ppsItem }: { ppsItem: PPSFullData }) {
   const { register, handleSubmit, setValue } = useForm({
     defaultValues: {
-      name: product?.name,
-      price: product?.price,
-      status: product?.status,
-      remaining: product?.remaining,
+      name: ppsItem?.product?.name,
+      price: ppsItem?.product?.price,
+      status: ppsItem?.status,
+      remaining: ppsItem?.remaining,
     },
   });
 
   useEffect(() => {
-    setValue("name", product?.name);
-    setValue("price", product?.price);
-    setValue("status", product?.status);
-    setValue("remaining", product?.remaining);
-  }, [product]);
+    setValue("name", ppsItem?.product?.name);
+    setValue("price", ppsItem?.product?.price);
+    setValue("status", ppsItem?.status);
+    setValue("remaining", ppsItem?.remaining);
+  }, [ppsItem]);
 
 
   const updateProductMutation = useUpdateProduct();
   const toaster = useToastHandler();
+  const updatePPS = useUpdatePPSByPPSID();
 
   const saveHandler = async (data: any) => {
     try {
-      await updateProductMutation.mutateAsync({ id: product?.id, product: data });
+      await updateProductMutation.mutateAsync({ id: ppsItem?.product?.id, product: data });
+      await updatePPS.mutateAsync({
+        id: {
+          product_id: ppsItem.id.product_id,
+          product_size_id: ppsItem.id.product_size_id,
+        },
+        remaining: data.remaining,
+        status: data.status,
+      });
+
       toaster("success", "Product updated successfully");
     } catch (error) {
       console.error("Error updating product:", error);
@@ -99,11 +115,11 @@ export function ProductManageForm({ product }: { product: Product }) {
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="status">Status</Label>
               <Select
-                defaultValue={product?.status} // Set the default value for the Select
-                onValueChange={(value) => setValue("status", value)} // Update form state on change
+                defaultValue={ppsItem?.status} // Set the default value for the Select
+                onValueChange={(value: Status) => setValue("status", value)} // Update form state on change
               >
                 <SelectTrigger id="status">
-                  <SelectValue placeholder={product?.status} />
+                  <SelectValue placeholder={ppsItem?.status} />
                 </SelectTrigger>
                 <SelectContent position="popper">
                   <SelectItem value="Available">Available</SelectItem>

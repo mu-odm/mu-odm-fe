@@ -37,7 +37,7 @@ export interface Product {
   id: string;
   name: string;
   price: number;
-  size?: string[]; // Add size property here if applicable
+  size?: string[];
 }
 
 export interface ProductInput {
