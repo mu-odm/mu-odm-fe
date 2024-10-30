@@ -43,11 +43,7 @@ const PurchaseCollapse: React.FC<PurchaseCollapseProps> = ({ purchase }) => {
         const purchaseData = purchases.find((p: Purchase) => p.id === purchase.id);
         if (!purchaseData) return;
     
-        // Define purchase-related variables within the useEffect scope
         const allPurchaseProductsInPurchase = purchase_products.filter((pp) => pp.id.purchase_id === purchase.id);
-        const allPPSInPP = pps.filter((pps) =>
-            allPurchaseProductsInPurchase.some((pp) => pp.id.pps_id.product_id === pps.id.product_id && pp.id.pps_id.product_size_id === pps.id.product_size_id)
-        );
         const allProductsInPP = products.filter((p) =>
             allPurchaseProductsInPurchase.some((pp) => pp.id.pps_id.product_id === p.id)
         );
@@ -181,8 +177,8 @@ const PurchaseCollapse: React.FC<PurchaseCollapseProps> = ({ purchase }) => {
                             
                                 return (
                                     <div key={uniqueKey} className="flex flex-col border rounded-md p-3 hover:bg-gray-600 hover:cursor-pointer" onClick={() => navigateToRoute(
-                                        `/admin/manage_product`,
-                                        pp.id.pps_id.product_id
+                                        `/admin/manage_product/${pp.id.pps_id.product_id}`,
+                                        pp.id.pps_id.product_size_id
                                     )}>
                                         <div className="flex flex-row justify-between items-center">
                                             <div className="text-lg font-bold">Product</div>
