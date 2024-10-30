@@ -1,8 +1,8 @@
-import { SetStateAction, useState } from 'react';
-import {  useUpdateProduct } from '@/api/user/useProduct';
-import { Product } from '@/types/db-schema';
-import { ProductManageForm } from './product_manage_form sm';
-import { useGetProductSizeList } from '@/api/user/useProductSize';
+import { SetStateAction, useState } from "react";
+import { useUpdateProduct } from "@/api/user/useProduct";
+import { Product } from "@/types/db-schema";
+import { ProductManageForm } from "@/components/product_manage_form sm";
+import { useGetProductSizeList } from "@/api/user/useProductSize";
 
 type CardProps = {
   id: string;
@@ -18,7 +18,7 @@ export default function Card({ id, title, price, status, amount }: CardProps) {
   const [editedPrice, setEditedPrice] = useState(price);
   const [editedStatus, setEditedStatus] = useState(status);
   const [editedAmount, setEditedAmount] = useState(amount);
-  
+
   const updateProductMutation = useUpdateProduct();
   const { data: sizes = [], isLoading: loadingSizes, error } = useGetProductSizeList();
 
@@ -31,28 +31,31 @@ export default function Card({ id, title, price, status, amount }: CardProps) {
   };
 
   const handleSaveChanges = async () => {
-    const updatedData : Product = {
-      id, // Include the ID
+    const updatedData: Product = {
+      id,
       name: editedTitle,
       price: editedPrice,
       remaining: editedAmount,
       status: editedStatus,
     };
 
-    updateProductMutation.mutate(updatedData, {
-      onSuccess: (updatedProduct) => {
-        setEditedTitle(updatedProduct.name);
-        setEditedPrice(updatedProduct.price);
-        setEditedStatus(updatedProduct.status);
-        setEditedAmount(updatedProduct.remaining);
-        alert("Product updated successfully!");
-        setIsModalVisible(false); // Close modal after successful update
-      },
-      onError: (error) => {
-        console.error("Error updating product:", error);
-        alert("Failed to update product. Please try again.");
-      },
-    });
+    updateProductMutation.mutate(
+      { id, product: updatedData },
+      {
+        onSuccess: (updatedProduct) => {
+          setEditedTitle(updatedProduct.name);
+          setEditedPrice(updatedProduct.price);
+          setEditedStatus(updatedProduct.status);
+          setEditedAmount(updatedProduct.remaining);
+          alert("Product updated successfully!");
+          setIsModalVisible(false);
+        },
+        onError: (error) => {
+          console.error("Error updating product:", error);
+          alert("Failed to update product. Please try again.");
+        },
+      }
+    );
   };
 
   if (loadingSizes) {
@@ -82,28 +85,34 @@ export default function Card({ id, title, price, status, amount }: CardProps) {
           <div className="bg-white p-8 rounded shadow-lg w-1/2">
             <h2 className="text-2xl font-bold mb-4 text-black">Edit Product</h2>
 
-            <ProductManageForm 
-              product={{ 
-                id, // Ensure ID is passed correctly
+            <ProductManageForm
+              product={{
+                id,
                 name: editedTitle,
                 price: editedPrice,
                 remaining: editedAmount,
                 status: editedStatus,
                 size: [], // Provide selected sizes if applicable
-              }} 
-              availableSizes={sizes.map(size => size.size)} // Pass the sizes here
-              onChange={(updatedProductDetail: { name: SetStateAction<string>; price: SetStateAction<number>; amount: SetStateAction<number>; status: SetStateAction<string>; }) => {
+              }}
+              availableSizes={sizes} // Pass the sizes array directly
+              selectedSizes={sizes.filter((size) => size)} // Filter undefined values
+              onClose={handleCloseModal}
+              onChange={(updatedProductDetail: {
+                name: SetStateAction<string>;
+                price: SetStateAction<number>;
+                amount: SetStateAction<number>;
+                status: SetStateAction<string>;
+              }) => {
                 setEditedTitle(updatedProductDetail.name);
                 setEditedPrice(updatedProductDetail.price);
                 setEditedAmount(updatedProductDetail.amount);
                 setEditedStatus(updatedProductDetail.status);
-                // Update size logic if needed
               }}
             />
 
             <div className="flex justify-end space-x-4 mt-4">
               <button
-                onClick={handleCloseModal} // Close modal on cancel
+                onClick={handleCloseModal}
                 className="bg-gray-300 text-black rounded px-4 py-2"
               >
                 Cancel

@@ -18,16 +18,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ProductDialog } from "./product_size_dialog sm";
-import { Product } from "@/types/db-schema";
+import { ProductDialog } from "@/components/product_size_dialog sm";
+import { PPS, Product, ProductSize } from "@/types/db-schema";
 import { useUpdateProduct } from "@/api/user/useProduct";
 import { useEffect } from "react";
 import { useGetProductSizeList } from "@/api/user/useProductSize";
+import { useGetPPSByProductId } from "@/api/user/usePPS";
 import useToastHandler from "@/lib/toastHandler";
 
 interface ProductManageFormProps {
   product: Product;
-  onClose: () => void; // Prop for closing the pane
+  availableSizes: ProductSize[];
+  selectedSizes: ProductSize[];
+  onClose: () => void;
+  onChange: (updatedProductDetail: {
+    name: string;
+    price: number;
+    amount: number;
+    status: string;
+  }) => void;
 }
 
 export function ProductManageForm({ product, onClose }: ProductManageFormProps) {
@@ -47,7 +56,8 @@ export function ProductManageForm({ product, onClose }: ProductManageFormProps) 
     setValue("remaining", product?.remaining);
   }, [product]);
 
-  const { data: productSizeList, refetch } = useGetProductSizeList();
+  const { data: productSizeList } = useGetProductSizeList();
+  const { data: ppsData } = useGetPPSByProductId(product?.id);
   const updateProductMutation = useUpdateProduct();
   const toaster = useToastHandler();
 
@@ -55,7 +65,7 @@ export function ProductManageForm({ product, onClose }: ProductManageFormProps) 
     try {
       await updateProductMutation.mutateAsync({ id: product?.id, product: data });
       toaster("success", "Product updated successfully");
-      onClose(); // Close the form after saving
+      onClose();
     } catch (error) {
       console.error("Error updating product:", error);
     }
@@ -64,9 +74,7 @@ export function ProductManageForm({ product, onClose }: ProductManageFormProps) 
   return (
     <Card className="w-full">
       <CardHeader className="flex justify-between items-center">
-        <div>
-          {/* Optional header content */}
-        </div>
+        <div>{/* Optional header content */}</div>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(saveHandler)}>
@@ -101,8 +109,8 @@ export function ProductManageForm({ product, onClose }: ProductManageFormProps) 
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="status">Status</Label>
               <Select
-                defaultValue={product?.status} // Set the default value for the Select
-                onValueChange={(value) => setValue("status", value)} // Update form state on change
+                defaultValue={product?.status}
+                onValueChange={(value) => setValue("status", value)}
               >
                 <SelectTrigger id="status">
                   <SelectValue placeholder={product?.status} />
@@ -119,19 +127,26 @@ export function ProductManageForm({ product, onClose }: ProductManageFormProps) 
               <div className="my-2 font-bold">Sizes</div>
             </div>
             <div className="flex flex-col gap-3">
-              {
-                productSizeList?.map((size) => (
-                  <div className="flex flex-row w-full gap-2" key={size.id}>
+              {ppsData?.map((ppsItem: PPS) => {
+                const productSize = productSizeList?.find(
+                  (size: ProductSize) => size.id === ppsItem.id.product_size_id
+                );
+
+                if (!productSize) return null;
+
+                return (
+                  <div className="flex flex-row w-full gap-2" key={ppsItem.id.product_size_id}>
                     <div className="flex w-full items-center justify-between border p-2 rounded-md px-3">
-                      <div>{size.size}</div>
-                      <div>+{size.additional_price}</div>
+                      <div>{productSize.size}</div>
+                      <div>+{productSize.additional_price}</div>
                     </div>
                   </div>
-                ))
-              }
+                );
+              })}
             </div>
+
             <div className="w-full">
-              <ProductDialog product_id={product?.id} refetch={refetch} />
+              <ProductDialog product_id={product?.id} refetch={() => {/* Refetch logic */}} />
             </div>
           </div>
           <CardFooter className="flex justify-between mt-4">

@@ -37,8 +37,9 @@ export interface Product {
   id: string;
   name: string;
   price: number;
-  status: string;
   remaining: number;
+  status: string;
+  size?: string[]; // Add size property here if applicable
 }
 
 export interface ProductInput {
@@ -46,7 +47,10 @@ export interface ProductInput {
   price: number;
   remaining: number;
   status: string;
-}
+  size: string; // This could be an array if you want it to be flexible
+  sizes?: string[]; // Add this line if you want to support multiple sizes
+};
+
 
 export interface ProductSize {
   id?: string;

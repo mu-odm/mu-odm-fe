@@ -125,17 +125,18 @@ const addProduct = async (product: ProductInput): Promise<Product> => {
       }
     );
 
-    return data;
+    return data;  // Ensure that data is being returned correctly
   } catch (error) {
     console.error("Error adding product:", error);
     throw error;
   }
 };
 
+
 export const useAddProduct = (): UseMutationResult<Product, Error, ProductInput> => {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutation<Product, Error, ProductInput>({
     mutationFn: addProduct,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });

@@ -56,7 +56,7 @@ const ClientSelectionModal: React.FC<ClientSelectionModalProps> = ({
             onChange={(e) => setAmount(Number(e.target.value))}
             min="1"
             max={selectedProduct?.remaining} // Set max based on remaining amount
-            className="border rounded p-2 w-full"
+            className="border rounded bg-white  p-2 w-full"
           />
         </div>
         <button
