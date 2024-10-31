@@ -6,6 +6,7 @@ import { Client } from "@/types/db-schema";
 import { useGetUser } from "@/api/user/useUser";
 import { useSession } from "next-auth/react";
 import AddClientButton from "@/components/addclient";
+import LoadingAnimation from "@/components/loading_animation";
 
 export default function ClientManager() {
   const session = useSession();
@@ -15,25 +16,32 @@ export default function ClientManager() {
   const addClientMutation = useAddClient();
   const updateClientMutation = useUpdateClient();
   const sessionEmail = session.data?.user?.sub;
-  const { data: user, isLoading: isLoadingUser, error: userError } = useGetUser(sessionEmail || "");
+
+  const { data: user, isLoading: isLoadingUser, error: userError } = useGetUser(sessionEmail!);
 
   useEffect(() => {
     if (user && initialClients) {
       const userFilteredClients = initialClients.filter(client => client.user_id === session.data?.user?.id);
       
-      // Filter clients based on defer status
       setDeferredClients(userFilteredClients.filter(client => client.deferStatus));
       setActiveClients(userFilteredClients.filter(client => !client.deferStatus));
     }
   }, [user, initialClients]);
 
   const handleAddClient = (newClient: { name: string; email: string; location: string; contact: string }) => {
+
+    if (!user?.id) {
+      return (
+        <LoadingAnimation/>
+      )
+    }
+
     const clientData: Client = {
       id: Date.now().toString(),
       ...newClient,
-      user_id: session.data?.user?.id ?? "",
-      deferStatus: false,
-      contract_year: 0
+      user_id: user?.id,
+      deferStatus: true,
+      contract_year: new Date().getFullYear(),
     };
   
     if (!clientData.user_id) {
@@ -77,7 +85,7 @@ export default function ClientManager() {
 
             {/* Clients with Defer Status */}
             <div className="mt-8">
-              <h2 className="text-xl font-bold mb-4">Active Clients</h2>
+              <h2 className="text-xl font-bold mb-4">Defer Clients</h2>
               <table className="w-full text-sm border-t mb-8">
                 <thead>
                   <tr className="text-gray-500">
@@ -111,7 +119,7 @@ export default function ClientManager() {
 
             {/* Clients without Defer Status */}
             <div className="mt-8">
-              <h2 className="text-xl font-bold mb-4">Defer Clients</h2>
+              <h2 className="text-xl font-bold mb-4">Active Clients</h2>
               <table className="w-full text-sm border-t mb-8">
                 <thead>
                   <tr className="text-gray-500">

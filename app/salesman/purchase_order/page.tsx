@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useGetClients } from "@/api/user/useClient";
-import { AddClient } from '@/types/db-schema';
+import { AddClient, PPS, ProductSize } from '@/types/db-schema';
 import { Client } from '@/types/db-schema';
 import { useGetUser } from "@/api/user/useUser";
 import { useSession } from "next-auth/react";
@@ -11,47 +11,61 @@ import { useGetProducts } from "@/api/user/useProduct";
 import { Product } from "@/types/db-schema";
 import Modal from "@/components/modal";
 import { FaShoppingCart } from "react-icons/fa";
+import { useGetAllPPS } from "@/api/user/usePPS";
+import { useGetProductSizeList } from "@/api/user/useProductSize";
+
+interface PPSFullData extends PPS {
+  product: Product;
+  productSize: ProductSize;
+}
 
 export default function Home() {
   const session = useSession();
   const { data: products, isLoading: isLoadingProducts } = useGetProducts();
+  const { data: productSizes, isLoading: loadingSizes, error: sizeError } = useGetProductSizeList();
   const { data: clients, isLoading: isLoadingClients } = useGetClients();
   const { data: user, isLoading: isLoadingUser } = useGetUser(session.data?.user?.sub || "");
+  const { data: pps, isLoading: loadingPPS, error: ppsError } = useGetAllPPS();
+
+  const ppsFullData = pps?.map((pps: PPS) => ({
+    ...pps,
+    product: products?.find((product: Product) => product.id === pps.id.product_id),
+    productSize: productSizes?.find((productSize: ProductSize) => productSize.id === pps.id.product_size_id),
+  })) as PPSFullData[];
   
   const [purchaseList, setPurchaseList] = useState<{ product: Product; client: AddClient; amount: number }[]>([]);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedPPS, setSelectedPPS] = useState<PPSFullData | null>(null);
   const [isClientModalOpen, setIsClientModalOpen] = useState(false);
   const [amount, setAmount] = useState<number>(0);
   const [isPurchaseListModalOpen, setIsPurchaseListModalOpen] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null); // For error handling
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Filter clients based on the user ID
   const filteredClients =
     user && clients
       ? clients.filter((client) => client.user_id === session.data?.user?.id)
       : [];
 
-  const handleAddToPurchase = (product: Product) => {
-    setSelectedProduct(product);
+  const handleAddToPurchase = (pps: PPSFullData) => {
+    setSelectedPPS(pps);
     setIsClientModalOpen(true);
   };
 
   const handleConfirmClient = (client: Client, amount: number) => {
-    if (selectedProduct && amount > 0 && amount <= selectedProduct.remaining) {
+    if (selectedPPS && amount > 0 && amount <= selectedPPS.remaining) {
       setPurchaseList((prev) => [
         ...prev, 
         { 
-          product: selectedProduct, 
+          product: selectedPPS.product, 
           client: { ...client, id: client.id || "default-id" }, // Assign a default if `id` is undefined
           amount 
         }
       ]);
-      setSelectedProduct(null);
+      setSelectedPPS(null);
       setIsClientModalOpen(false);
       setAmount(0);
     } else {
-      alert(`Please enter a valid amount (1 to ${selectedProduct?.remaining})`);
+      alert(`Please enter a valid amount (1 to ${selectedPPS?.remaining})`);
     }
   };
   
@@ -86,17 +100,17 @@ export default function Home() {
                 </button>
               </div>
             </div>
-            {products?.map((product: Product, index: number) => (
+            {ppsFullData?.map((pps: PPSFullData, index: number) => (
               <div
                 key={index}
                 className="border p-5 flex justify-between items-center"
               >
-                <span>{product.name}</span>
+                <span>{pps.product.name}</span>
                 <div className="flex items-center space-x-5">
                   <span>Remaining:</span>
-                  <span className="font-bold">{product.remaining}</span>
+                  <span className="font-bold">{pps.remaining}</span>
                   <button
-                    onClick={() => handleAddToPurchase(product)}
+                    onClick={() => handleAddToPurchase(pps)}
                     className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
                   >
                     Add to Purchase
@@ -115,7 +129,7 @@ export default function Home() {
         isOpen={isClientModalOpen}
         onClose={() => setIsClientModalOpen(false)}
         onConfirm={handleConfirmClient}
-        selectedProduct={selectedProduct}
+        selectedPPS={selectedPPS}
         clients={filteredClients} // Pass the filtered clients
       />
 

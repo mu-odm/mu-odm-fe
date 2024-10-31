@@ -1,34 +1,83 @@
 // components/ClientSelectionModal.tsx
 import React, { useState } from 'react';
-import { Client } from "@/types/db-schema";
+import { Client, PPS, ProductSize } from "@/types/db-schema";
 import { Product } from '@/types/db-schema';
+import { useCreatePurchaseProduct } from '@/api/user/usePurchaseProduct';
+import useClientPurchaseStore from '@/stores/clientPurchaseStore';
+import { useGetAllPPS } from '@/api/user/usePPS';
 
 interface ClientSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (client: Client, amount: number) => void; // Pass client and amount to parent
-  selectedProduct: Product | null; // Selected product prop
+  selectedPPS: PPSFullData | null; // Selected product prop
   clients: Client[]; // Clients prop
+}
+
+interface PPSFullData extends PPS {
+  product: Product;
+  productSize: ProductSize;
 }
 
 const ClientSelectionModal: React.FC<ClientSelectionModalProps> = ({
   isOpen,
   onClose,
   onConfirm,
-  selectedProduct,
+  selectedPPS,
   clients
 }) => {
-  const [amount, setAmount] = useState<number>(0); // State for amount input
+
+  const createPP = useCreatePurchaseProduct();
+  const [amount, setAmount] = useState<number>(0);
+  const addClientPurchase = useClientPurchaseStore((state) => state.addClientPurchase);
+  const clientPurchase = useClientPurchaseStore((state) => state.clientPurchase);
+  const { data: pps } = useGetAllPPS();
 
   if (!isOpen) return null;
 
   const handleConfirm = (client: Client) => {
-    if (amount <= 0 || amount > (selectedProduct?.remaining || 0)) {
-      alert(`Please enter a valid amount (1 to ${selectedProduct?.remaining})`); // Alert if the amount is invalid
+    if (amount <= 0 || amount > (selectedPPS?.remaining || 0)) {
+      alert(`Please enter a valid amount (1 to ${selectedPPS?.remaining})`); // Alert if the amount is invalid
       return;
     }
-    onConfirm(client, amount); // Pass selected client and amount to the parent component
-    setAmount(0); // Reset the amount after confirmation
+
+    if (!selectedPPS || !selectedPPS.product.id || !selectedPPS.productSize.id || !client.id) {
+      console.error("Invalid product or product size");
+      return;
+    }
+
+    try {
+
+      if (clientPurchase.some((purchase) => 
+        (purchase.id.pps_id.product_id === selectedPPS.product.id) && 
+      (purchase.id.pps_id.product_size_id === selectedPPS.productSize.id) &&
+      (
+        purchase.clientID === client.id
+      )
+    )) {
+        alert("Product already added");
+        return
+      }
+      
+      addClientPurchase({
+        id: {
+          purchase_id: "",
+          pps_id: {
+            product_id: selectedPPS.product.id,
+            product_size_id: selectedPPS.productSize.id
+          }
+        },
+        productID: selectedPPS.product.id,
+        clientID: client.id,
+        amount: amount
+      });
+    }
+    catch (error) {
+      console.error("Error adding purchase product:", error);
+    }
+    
+    onConfirm(client, amount);
+    setAmount(0);
   };
 
   return (
@@ -55,7 +104,7 @@ const ClientSelectionModal: React.FC<ClientSelectionModalProps> = ({
             value={amount}
             onChange={(e) => setAmount(Number(e.target.value))}
             min="1"
-            max={selectedProduct?.remaining} // Set max based on remaining amount
+            max={selectedPPS?.remaining} // Set max based on remaining amount
             className="border rounded bg-white  p-2 w-full"
           />
         </div>

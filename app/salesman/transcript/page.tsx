@@ -20,6 +20,7 @@ export default function StockView() {
   const { data: purchaseProducts, isLoading: isLoadingPurchaseProducts, error: purchaseProductsError } = usePurchaseProduct();
   const { data: products, isLoading: isLoadingProducts, error: productsError } = useGetProducts();
   const { data: allUsers, isLoading: isLoadingAllUsers, error: allUsersError } = useGetAllUsers();
+  console.log(purchaseProducts);
 
   const session = useSession();
   const [userRegion, setUserRegion] = useState<string | null>(null);
@@ -105,15 +106,17 @@ export default function StockView() {
                                   (product) => product.id.purchase_id === purchase.id
                                 );
 
+                                console.log(relatedProducts);
+
                                 return (
                                   <React.Fragment key={purchase.id}>
                                     {relatedProducts && relatedProducts.length > 0 ? (
                                       relatedProducts.map((product) => (
-                                        <tr key={product.id.product_id}>
+                                        <tr key={product.id.purchase_id}>
                                           <td className="py-2 px-3 overflow-scroll-cell w-auto">{purchase.id}</td>
                                           <td className="py-2 px-10">{new Date(purchase.created_at).toLocaleDateString()}</td>
                                           <td className="py-2 px-5 overflow-scroll-cell w-1/6">
-                                            {productMap[product.id.product_id] || product.id.product_id}
+                                            {productMap[product.id.pps_id.product_id] || product.id.purchase_id}
                                           </td>
                                           <td className="py-2 px-5 overflow-scroll-cell w-1/6">{product.clientID}</td>
                                           <td className="py-2 px-5">{product.amount}</td>

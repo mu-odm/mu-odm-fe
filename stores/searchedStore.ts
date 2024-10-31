@@ -1,4 +1,4 @@
-import { Product } from "@/api/user/useProduct";
+import { Product } from "@/types/db-schema";
 import { create } from "zustand";
 
 interface ProductsSearchedStore {

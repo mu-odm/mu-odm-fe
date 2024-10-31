@@ -1,5 +1,5 @@
 export interface Client {
-  user_id: any;
+  user_id: string;
   id?: string;
   email: string;
   name: string;
@@ -82,9 +82,11 @@ export interface PurchaseProduct {
   id: PurchaseProductKey;
   productID: string;
   amount: number;
+  clientID: string;
 }
 
 export interface User {
+  id?: string;
   username: string;
   email: string;
   region: string;
@@ -101,7 +103,8 @@ export interface RegisterUser {
 export interface CreatePurchaseProductParams {
   amount: number;
   clientID: string;
-  productID: string;
+  product_id: string;
+  product_size_id: string;
 }
 
 export interface PPS {

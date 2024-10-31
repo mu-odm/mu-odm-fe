@@ -17,9 +17,9 @@ export default function Home() {
   // Use the useGetProducts hook for data fetching
   const { data: products, isLoading, error } = useGetProducts();
   const { data: productSizes, isLoading: loadingSizes, error: sizeError } = useGetProductSizeList();
-  const { data: pps, isLoading: loadingPPS, error: ppsError } = useGetAllPPS();  
+  const { data: pps, isLoading: loadingPPS, error: ppsError, refetch: ppsRefetch } = useGetAllPPS();  
 
-  if (isLoading) {
+  if (isLoading || loadingSizes || loadingPPS) {
     return <LoadingAnimation/>
   }
 
@@ -34,7 +34,6 @@ export default function Home() {
       <div className="p-8">
         <div className="flex">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {/* Map through the products data if available */}
             {ppsFullData?.map((pps: PPSFullData) => {
 
               const uniqueKey = pps.id.product_id + pps.id.product_size_id;

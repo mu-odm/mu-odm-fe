@@ -2,6 +2,8 @@ import React from 'react';
 import { Product } from '@/types/db-schema';
 import { AddClient } from "@/types/db-schema";
 import { useCreatePurchaseProduct } from '@/api/user/usePurchaseProduct';
+import useClientPurchaseStore from '@/stores/clientPurchaseStore';
+import { useGetClients } from '@/api/user/useClient';
 
 interface PurchaseItem {
   product: Product;
@@ -17,16 +19,27 @@ interface ModalProps {
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, purchaseList }) => {
   const { mutateAsync: createPurchaseProduct } = useCreatePurchaseProduct();
+  const createPP = useCreatePurchaseProduct();
+  const clientPurchase = useClientPurchaseStore((state) => state.clientPurchase);
+  const clearClientPurchase = useClientPurchaseStore((state) => state.clearClientPurchase);
+  const { data: clients, isLoading: clientLoading } = useGetClients();
 
   const handlePurchase = async () => {
-    for (const { client, product, amount } of purchaseList) {
-      await createPurchaseProduct({
-        amount,
-        clientID: client.id,
-        productID: product.id,
+    clientPurchase.forEach(async (clientPurchase) => {
+      const clientData = clients?.find((client) => client.id === clientPurchase.clientID);
+      if (!clientData) return;
+      if (clientData.deferStatus) return;
+
+      await createPP.mutate({
+        clientID: clientPurchase.clientID,
+        product_id: clientPurchase?.id.pps_id.product_id,
+        product_size_id: clientPurchase?.id.pps_id.product_size_id,
+        amount: clientPurchase.amount
       });
-    }
+    })
     onClose();
+    clearClientPurchase();
+    window.location.reload();
   };
 
   if (!isOpen) return null;
@@ -56,13 +69,26 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, purchaseList }) => {
           </tbody>
         </table>
 
-        {/* Submit Button */}
+        <div className='flex flex-row w-full justify-between'>
+          {/* Submit Button */}
+        <div className='flex flex-row gap-2'>
         <button 
           onClick={handlePurchase} 
           className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         >
           Confirm Purchase
         </button>
+        <button 
+          onClick={() => {
+            clearClientPurchase();
+            onClose();
+            window.location.reload();
+          }} 
+          className="mt-4 btn text-white px-4 py-2 rounded hover:bg-red-600"
+        >
+          Clear
+        </button>
+        </div>
         
         {/* Close Button */}
         <button 
@@ -71,6 +97,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, purchaseList }) => {
         >
           Close
         </button>
+        
+        </div>
       </div>
     </div>
   );
