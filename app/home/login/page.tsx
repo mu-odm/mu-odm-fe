@@ -87,7 +87,7 @@ const LoginPage: React.FC = () => {
           </button>
           
           <div className="flex flex-row gap-2 mt-2 text-sm justify-start">
-            <p>Don't have an account?</p>
+            <p>Don&apos;t have an account?</p>
             <a href="./register" className="text-red-500 hover:underline">
               Register
             </a>

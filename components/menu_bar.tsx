@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import Link from "next/link"
 
 import { cn } from "@/lib/utils"
 import {
@@ -11,10 +10,8 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import useRouteHandler from "@/lib/routeHandler"
-import { signOut } from "next-auth/react"
 
 export function MenuBar({ title_name, route_list }: { title_name: string, route_list: { name: string; route: string }[] }) {
 
