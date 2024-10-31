@@ -18,7 +18,6 @@ interface ModalProps {
 }
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, purchaseList }) => {
-  const { mutateAsync: createPurchaseProduct } = useCreatePurchaseProduct();
   const createPP = useCreatePurchaseProduct();
   const clientPurchase = useClientPurchaseStore((state) => state.clientPurchase);
   const clearClientPurchase = useClientPurchaseStore((state) => state.clearClientPurchase);
@@ -38,8 +37,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, purchaseList }) => {
       });
     })
     onClose();
-    clearClientPurchase();
-    window.location.reload();
+    await clearClientPurchase();
   };
 
   if (!isOpen) return null;
