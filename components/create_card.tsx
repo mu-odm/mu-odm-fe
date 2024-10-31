@@ -5,6 +5,7 @@ import { useAddProduct } from "@/api/user/useProduct";
 import { useGetProductSizeList } from "@/api/user/useProductSize";
 import { usePostPPS } from "@/api/user/usePPS";
 import "@/app/globals.css";
+import { Status } from "@/types/db-schema";
 
 type CardProps = {
   title: string;
@@ -22,7 +23,7 @@ const Modal = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (name: string, price: number, remaining: number, status: string, sizes: string[]) => void;
+  onConfirm: (name: string, price: number, remaining: number, status: Status, sizes: string[]) => void;
   productSizes: string[];
 }) => {
   const [productName, setProductName] = useState("");
@@ -110,7 +111,7 @@ const Modal = ({
             Close
           </button>
           <button
-            onClick={() => onConfirm(productName, price, remaining, status ? "Available" : "Unavailable", selectedSizes)}
+            onClick={() => onConfirm(productName, price, remaining, status ? Status.Available : Status.Unavailable, selectedSizes)}
             className="bg-green-500 text-white rounded px-4 py-2"
           >
             Add Product
@@ -127,7 +128,7 @@ export default function Create_Card({ title, description, imageUrl, warehouse, a
   const { mutate: postPPS } = usePostPPS();
   const { data: productSizes } = useGetProductSizeList();
 
-  const handleAddProductWrapper = async (name: string, price: number, remaining: number, status: string, sizes: string[]) => {
+  const handleAddProductWrapper = async (name: string, price: number, remaining: number, status: Status, sizes: string[]) => {
     if (!name || !price || !remaining || !status || sizes.length === 0) {
       alert("Please fill out all fields.");
       return;
@@ -156,9 +157,14 @@ export default function Create_Card({ title, description, imageUrl, warehouse, a
 
             // Post PPS for each valid product size ID
             sizeIds.forEach((sizeId) => {
+              console.log("Posting PPS with:", { remaining, status });
               console.log("Posting PPS with:", { product_id: productData.id, product_size_id: sizeId });
               postPPS(
-                { product_id: productData.id, product_size_id: sizeId },
+                { 
+                  id: { product_id: productData.id, product_size_id: sizeId },
+                  remaining: remaining,
+                  status: status,
+                 },
                 {
                   onSuccess: () => console.log(`PPS entry added for size ID ${sizeId}`),
                   onError: (error) => {

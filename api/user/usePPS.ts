@@ -43,6 +43,28 @@ const updatePPSByPPSID = async (updatedData: PPS) => {
     return data;
 }
 
+const createPPS = async (pps: PPS) => {
+    const session = await getSession();
+    const { data } = await axios.post<PPS>("/pps", {
+        product_id: pps.id.product_id,
+        product_size_id: pps.id.product_size_id,
+        remaining: pps.remaining,
+        status: pps.status,
+    }, {
+        headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+        },
+    });
+    
+    return data;
+}
+
+export const usePostPPS = (): UseMutationResult<PPS, unknown, PPS> => {
+  return useMutation({
+    mutationFn: createPPS,
+  });
+}
+
 export const useUpdatePPSByPPSID = (): UseMutationResult<PPS, unknown, PPS> => {
   return useMutation({
     mutationFn: updatePPSByPPSID,

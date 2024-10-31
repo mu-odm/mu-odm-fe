@@ -19,15 +19,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ProductDialog } from "@/components/product_size_dialog sm";
-import { PPS, Product, ProductSize } from "@/types/db-schema";
+import { PPS, Product, ProductSize, Status } from "@/types/db-schema";
 import { useUpdateProduct } from "@/api/user/useProduct";
 import { useEffect } from "react";
 import { useGetProductSizeList } from "@/api/user/useProductSize";
-import { useGetPPSByProductId } from "@/api/user/usePPS";
+import { useGetAllPPS, useGetAllPPSBYProductID } from "@/api/user/usePPS";
 import useToastHandler from "@/lib/toastHandler";
 
+interface ExtenededProeduct extends Product {
+  remaining: number;
+  status: Status;
+  productSizeID: string;
+}
+
 interface ProductManageFormProps {
-  product: Product;
+  exProduct: ExtenededProeduct;
   availableSizes: ProductSize[];
   selectedSizes: ProductSize[];
   onClose: () => void;
@@ -39,31 +45,32 @@ interface ProductManageFormProps {
   }) => void;
 }
 
-export function ProductManageForm({ product, onClose }: ProductManageFormProps) {
+export function ProductManageForm({ exProduct, onClose }: ProductManageFormProps) {
   const { register, handleSubmit, setValue } = useForm({
     defaultValues: {
-      name: product?.name,
-      price: product?.price,
-      status: product?.status,
-      remaining: product?.remaining,
+      name: exProduct?.name,
+      price: exProduct?.price,
+      status: exProduct?.status,
+      remaining: exProduct?.remaining,
     },
   });
 
   useEffect(() => {
-    setValue("name", product?.name);
-    setValue("price", product?.price);
-    setValue("status", product?.status);
-    setValue("remaining", product?.remaining);
-  }, [product]);
+    setValue("name", exProduct?.name);
+    setValue("price", exProduct?.price);
+    setValue("status", exProduct?.status);
+    setValue("remaining", exProduct?.remaining);
+  }, [exProduct]);
 
   const { data: productSizeList } = useGetProductSizeList();
-  const { data: ppsData } = useGetPPSByProductId(product?.id);
+  const { data: pps } = useGetAllPPS()
+  const ppsData = pps?.filter((pps: PPS) => pps.id.product_id === exProduct?.id && pps.id.product_size_id === exProduct?.productSizeID);
   const updateProductMutation = useUpdateProduct();
   const toaster = useToastHandler();
 
   const saveHandler = async (data: any) => {
     try {
-      await updateProductMutation.mutateAsync({ id: product?.id, product: data });
+      await updateProductMutation.mutateAsync({ id: exProduct?.id, product: data });
       toaster("success", "Product updated successfully");
       onClose();
     } catch (error) {
@@ -109,11 +116,11 @@ export function ProductManageForm({ product, onClose }: ProductManageFormProps) 
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="status">Status</Label>
               <Select
-                defaultValue={product?.status}
-                onValueChange={(value) => setValue("status", value)}
+                defaultValue={exProduct?.status}
+                onValueChange={(value: Status) => setValue("status", value)}
               >
                 <SelectTrigger id="status">
-                  <SelectValue placeholder={product?.status} />
+                  <SelectValue placeholder={exProduct?.status} />
                 </SelectTrigger>
                 <SelectContent position="popper">
                   <SelectItem value="Available">Available</SelectItem>
@@ -146,7 +153,7 @@ export function ProductManageForm({ product, onClose }: ProductManageFormProps) 
             </div>
 
             <div className="w-full">
-              <ProductDialog product_id={product?.id} refetch={() => {/* Refetch logic */}} />
+              <ProductDialog product_id={exProduct?.id} refetch={() => {/* Refetch logic */}} />
             </div>
           </div>
           <CardFooter className="flex justify-between mt-4">

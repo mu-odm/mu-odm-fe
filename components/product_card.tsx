@@ -1,26 +1,36 @@
 import { SetStateAction, useState } from "react";
 import { useUpdateProduct } from "@/api/user/useProduct";
-import { Product } from "@/types/db-schema";
+import { PPS, Product, ProductSize, Status } from "@/types/db-schema";
 import { ProductManageForm } from "@/components/product_manage_form sm";
 import { useGetProductSizeList } from "@/api/user/useProductSize";
+import { useUpdatePPSByPPSID } from "@/api/user/usePPS";
+import LoadingAnimation from "./loading_animation";
 
 type CardProps = {
   id: string;
   title: string;
   price: number;
-  status: string;
+  status: Status;
   amount: number;
+  size: string;
+  sizeID: string;
 };
 
-export default function Card({ id, title, price, status, amount }: CardProps) {
+export default function Card({ id, title, price, status, amount, size, sizeID }: CardProps) {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editedTitle, setEditedTitle] = useState(title);
   const [editedPrice, setEditedPrice] = useState(price);
   const [editedStatus, setEditedStatus] = useState(status);
   const [editedAmount, setEditedAmount] = useState(amount);
+  const [editedSize, setEditedSize] = useState<string[]>([]);
 
   const updateProductMutation = useUpdateProduct();
-  const { data: sizes = [], isLoading: loadingSizes, error } = useGetProductSizeList();
+  const updatePPS = useUpdatePPSByPPSID();
+  const { data: sizes, isLoading: loadingSizes, error } = useGetProductSizeList();
+
+  if (loadingSizes) {
+    return <LoadingAnimation/>
+  }
 
   const handleCardClick = () => {
     setIsModalVisible(true);
@@ -35,9 +45,31 @@ export default function Card({ id, title, price, status, amount }: CardProps) {
       id,
       name: editedTitle,
       price: editedPrice,
-      remaining: editedAmount,
-      status: editedStatus,
     };
+
+    editedSize.forEach(async (size) => {
+      const updatedStatusAndRemaining: PPS = {
+        id: {
+          product_id: id,
+          product_size_id: size,
+        },
+        remaining: editedAmount,
+        status: editedStatus,
+      };
+
+      await updatePPS.mutateAsync(updatedStatusAndRemaining,
+        {
+          onSuccess: (updatedStatusAndRemaining) => {
+            setEditedStatus(editedStatus);
+            setEditedAmount(editedAmount);
+          },
+          onError: (error) => {
+            console.error("Error updating PPS:", error);
+            alert("Failed to update PPS. Please try again.");
+          },
+        }
+      );
+    });
 
     updateProductMutation.mutate(
       { id, product: updatedData },
@@ -45,8 +77,7 @@ export default function Card({ id, title, price, status, amount }: CardProps) {
         onSuccess: (updatedProduct) => {
           setEditedTitle(updatedProduct.name);
           setEditedPrice(updatedProduct.price);
-          setEditedStatus(updatedProduct.status);
-          setEditedAmount(updatedProduct.remaining);
+          
           alert("Product updated successfully!");
           setIsModalVisible(false);
         },
@@ -77,25 +108,27 @@ export default function Card({ id, title, price, status, amount }: CardProps) {
           <p className="text-white text-xs mb-1">Price: ${price}</p>
           <p className="text-white text-xs">Status: {status}</p>
           <p className="text-white text-xs">Remaining: {amount}</p>
+          <p className="text-white text-xs">Size: {size}</p>
         </div>
       </div>
 
-      {isModalVisible && (
+      {sizes && isModalVisible && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-700 bg-opacity-75 z-50">
           <div className="bg-white p-8 rounded shadow-lg w-1/2">
             <h2 className="text-2xl font-bold mb-4 text-black">Edit Product</h2>
 
             <ProductManageForm
-              product={{
+              exProduct={{
                 id,
                 name: editedTitle,
                 price: editedPrice,
                 remaining: editedAmount,
                 status: editedStatus,
-                size: [], // Provide selected sizes if applicable
+                size: [],
+                productSizeID: sizeID,
               }}
-              availableSizes={sizes} // Pass the sizes array directly
-              selectedSizes={sizes.filter((size) => size)} // Filter undefined values
+              availableSizes={sizes}
+              selectedSizes={sizes.filter((size) => size)} 
               onClose={handleCloseModal}
               onChange={(updatedProductDetail: {
                 name: SetStateAction<string>;
@@ -106,7 +139,7 @@ export default function Card({ id, title, price, status, amount }: CardProps) {
                 setEditedTitle(updatedProductDetail.name);
                 setEditedPrice(updatedProductDetail.price);
                 setEditedAmount(updatedProductDetail.amount);
-                setEditedStatus(updatedProductDetail.status);
+                setEditedStatus(editedStatus);
               }}
             />
 
