@@ -2,32 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --radius: 0.5rem;
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+/* Custom styles for your application */
+.card {
+  max-width: 100%;
+  height: auto;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+.grid {
+  overflow: hidden;
+}
+
+/* Toggle Switch Styles */
+.switch-container {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.switch-input {
+  display: none;
+}
+
+.switch-label {
+  position: relative;
+  width: 50px;
+  height: 25px;
+  background-color: #ccc;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.switch-label .switch-button {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 21px;
+  height: 21px;
+  background-color: white;
+  border-radius: 50%;
+  transition: left 0.3s;
+}
+
+.switch-input:checked + .switch-label {
+  background-color: #4caf50;
+}
+
+.switch-input:checked + .switch-label .switch-button {
+  left: 25px;
+}
+
+.overflow-scroll-cell {
+  max-width: 150px; /* Adjust width as needed */
+  overflow-x: auto;
+  white-space: nowrap;
 }

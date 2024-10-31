@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
+import NextAuthProvider from "@/provider/NextAuthProvider";
+import QueryClientProvider from "@/provider/QueryClientProvider";
+import { Toaster } from "@/components/ui/toaster";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -15,8 +19,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang="en" className="bg-white">
+      <body className={`${inter.className}`}>
+        <NextAuthProvider>
+          <QueryClientProvider>
+            <Toaster />
+            {children}
+          </QueryClientProvider>
+        </NextAuthProvider>
+      </body>
     </html>
   );
 }
