@@ -1,14 +1,22 @@
 import React from 'react';
-import { Product } from '@/types/db-schema';
+import { PPS, Product, ProductSize } from '@/types/db-schema';
 import { AddClient } from "@/types/db-schema";
 import { useCreatePurchaseProduct } from '@/api/user/usePurchaseProduct';
 import useClientPurchaseStore from '@/stores/clientPurchaseStore';
 import { useGetClients } from '@/api/user/useClient';
+import { useGetAllPPS } from "@/api/user/usePPS";
+import { useGetProductSizeList } from "@/api/user/useProductSize";
+import { useGetProducts } from '@/api/user/useProduct';
 
 interface PurchaseItem {
   product: Product;
   client: AddClient;
   amount: number;
+  pps: ProductSize;
+}
+interface PPSFullData extends PPS {
+  product: Product;
+  productSize: ProductSize;
 }
 
 interface ModalProps {
@@ -22,6 +30,15 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, purchaseList }) => {
   const clientPurchase = useClientPurchaseStore((state) => state.clientPurchase);
   const clearClientPurchase = useClientPurchaseStore((state) => state.clearClientPurchase);
   const { data: clients, isLoading: clientLoading } = useGetClients();
+  const { data: products, isLoading: isLoadingProducts } = useGetProducts();
+  const { data: productSizes, isLoading: loadingSizes, error: sizeError } = useGetProductSizeList();
+  const { data: pps, isLoading: loadingPPS, error: ppsError } = useGetAllPPS();
+
+  const ppsFullData = pps?.map((pps: PPS) => ({
+    ...pps,
+    product: products?.find((product: Product) => product.id === pps.id.product_id),
+    productSize: productSizes?.find((productSize: ProductSize) => productSize.id === pps.id.product_size_id),
+  })) as PPSFullData[];
 
   const handlePurchase = async () => {
     clientPurchase.forEach(async (clientPurchase) => {
@@ -53,14 +70,16 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, purchaseList }) => {
             <tr>
               <th className="border-b px-4 py-2 text-left">Client</th>
               <th className="border-b px-4 py-2 text-left">Product</th>
+              <th className="border-b px-4 py-2 text-left">Size</th>
               <th className="border-b px-4 py-2 text-left">Amount</th>
             </tr>
           </thead>
           <tbody>
-            {purchaseList.map(({ client, product, amount }, index) => (
+            {purchaseList.map(({ client, product, amount ,pps}, index) => (
               <tr key={index} className="border-b">
                 <td className="px-4 py-2">{client.name || 'N/A'}</td>
                 <td className="px-4 py-2">{product.name}</td>
+                <td className="px-4 py-2">{pps.size}</td>
                 <td className="px-4 py-2">{amount}</td>
               </tr>
             ))}

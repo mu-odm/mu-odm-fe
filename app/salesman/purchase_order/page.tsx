@@ -33,7 +33,7 @@ export default function Home() {
     productSize: productSizes?.find((productSize: ProductSize) => productSize.id === pps.id.product_size_id),
   })) as PPSFullData[];
   
-  const [purchaseList, setPurchaseList] = useState<{ product: Product; client: AddClient; amount: number }[]>([]);
+  const [purchaseList, setPurchaseList] = useState<{ product: Product; client: AddClient; amount: number , pps : ProductSize}[]>([]);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [selectedPPS, setSelectedPPS] = useState<PPSFullData | null>(null);
   const [isClientModalOpen, setIsClientModalOpen] = useState(false);
@@ -43,7 +43,7 @@ export default function Home() {
 
   const filteredClients =
     user && clients
-      ? clients.filter((client) => client.user_id === session.data?.user?.id)
+      ? clients.filter((client) => client.user?.id === user.id)
       : [];
 
   const handleAddToPurchase = (pps: PPSFullData) => {
@@ -57,6 +57,7 @@ export default function Home() {
         ...prev, 
         { 
           product: selectedPPS.product, 
+          pps: selectedPPS.productSize,
           client: { ...client, id: client.id || "default-id" }, // Assign a default if `id` is undefined
           amount 
         }
@@ -107,6 +108,7 @@ export default function Home() {
               >
                 <span>{pps.product.name}</span>
                 <div className="flex items-center space-x-5">
+                <span>{pps.productSize.size}</span>
                   <span>Remaining:</span>
                   <span className="font-bold">{pps.remaining}</span>
                   <button

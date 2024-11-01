@@ -1,6 +1,7 @@
 export interface Client {
-  user_id: string;
+  user?: User;
   id?: string;
+  user_id : string;
   email: string;
   name: string;
   contract_year: number;

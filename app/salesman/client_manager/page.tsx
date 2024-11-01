@@ -21,11 +21,11 @@ export default function ClientManager() {
 
   useEffect(() => {
     if (user && initialClients) {
-      const userFilteredClients = initialClients.filter(client => client.user_id === session.data?.user?.id);
-      
+      const userFilteredClients = initialClients.filter(client => client.user?.id === user.id);
       setDeferredClients(userFilteredClients.filter(client => client.deferStatus));
       setActiveClients(userFilteredClients.filter(client => !client.deferStatus));
     }
+    
   }, [user, initialClients]);
 
   const handleAddClient = (newClient: { name: string; email: string; location: string; contact: string }) => {
